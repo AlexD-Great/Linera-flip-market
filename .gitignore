@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
+
+# Rust
+target/
+Cargo.lock
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+*.wasm
+*.wat
