@@ -1,0 +1,40 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGradient)"/>
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#EC4899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="boltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main Coin Circle -->
+  <circle cx="256" cy="256" r="180" fill="rgba(255,255,255,0.1)" stroke="#FFF" stroke-width="8"/>
+  
+  <!-- Inner Coin Details -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="4"/>
+  
+  <!-- Lightning Bolt (Linera) -->
+  <path d="M280 140 L220 256 L260 256 L230 380 L320 230 L280 230 Z" 
+        fill="url(#boltGradient)" 
+        stroke="#FFF" 
+        stroke-width="6"
+        stroke-linejoin="round"/>
+  
+  <!-- Coin Flip Motion Lines -->
+  <ellipse cx="256" cy="256" rx="160" ry="40" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+  <ellipse cx="256" cy="256" rx="40" ry="160" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+  
+  <!-- Decorative Dots -->
+  <circle cx="256" cy="100" r="8" fill="#FCD34D" opacity="0.8"/>
+  <circle cx="256" cy="412" r="8" fill="#FCD34D" opacity="0.8"/>
+  <circle cx="100" cy="256" r="8" fill="#FCD34D" opacity="0.8"/>
+  <circle cx="412" cy="256" r="8" fill="#FCD34D" opacity="0.8"/>
+</svg>
