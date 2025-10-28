@@ -5,7 +5,13 @@
 [![Linera](https://img.shields.io/badge/Built%20on-Linera-purple)](https://linera.io)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## 🎯 Overview
+## � Live Demo
+
+**🚀 [View Live Demo](https://linera-flip-market.vercel.app)**
+
+> Experience the Linera Flip Market in action! The frontend is deployed on Vercel.
+
+## �🎯 Overview
 
 Linera Flip Market is a decentralized coin flip betting platform that leverages Linera's microchain architecture for instant, transparent, and fair betting. Players can create coin flips, place bets, and see results resolved in real-time with zero latency.
 
