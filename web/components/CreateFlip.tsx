@@ -1,12 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { useFlipMarketStore } from '@/lib/store';
+import { Loader2 } from 'lucide-react';
 
 export default function CreateFlip() {
   const [betAmount, setBetAmount] = useState('1.0');
+  const { createFlip, isLoading, currentUser } = useFlipMarketStore();
 
-  const handleCreate = () => {
-    alert(`Creating flip with bet amount: ${betAmount} LINERA`);
+  const handleCreate = async () => {
+    if (!currentUser) {
+      alert('Please connect your wallet first!');
+      return;
+    }
+    await createFlip(betAmount);
+    alert(`Flip created successfully! 🎉`);
   };
 
   return (
@@ -38,9 +46,17 @@ export default function CreateFlip() {
 
         <button
           onClick={handleCreate}
-          className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-6 py-4 rounded-lg font-bold text-lg transition-all shadow-lg"
+          disabled={isLoading || !currentUser}
+          className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-6 py-4 rounded-lg font-bold text-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          🚀 Create Flip
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            '🚀 Create Flip'
+          )}
         </button>
       </div>
     </div>
