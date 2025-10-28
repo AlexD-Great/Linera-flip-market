@@ -1,13 +1,29 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useFlipMarketStore } from '@/lib/store';
 import { shortenAddress } from '@/lib/utils';
 import { Wallet, LogOut, ExternalLink } from 'lucide-react';
 
 export default function WalletConnect() {
   const { currentUser, connectWallet, disconnectWallet } = useFlipMarketStore();
-  
-  const hasMetaMask = typeof window !== 'undefined' && typeof window.ethereum !== 'undefined';
+  const [hasMetaMask, setHasMetaMask] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setHasMetaMask(typeof window.ethereum !== 'undefined');
+  }, []);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <button className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-2 rounded-lg font-semibold shadow-lg opacity-50 cursor-wait">
+        <Wallet className="w-5 h-5" />
+        Loading...
+      </button>
+    );
+  }
 
   if (currentUser) {
     return (

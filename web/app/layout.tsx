@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://linera-flip-market.vercel.app'),
   title: "Linera Flip Market - Decentralized Coin Flip Betting",
   description: "Real-time coin flip betting powered by Linera microchains. Create flips, place bets, and win instantly with zero-latency blockchain technology.",
   keywords: ["Linera", "blockchain", "coin flip", "betting", "DeFi", "microchains", "Web3"],
