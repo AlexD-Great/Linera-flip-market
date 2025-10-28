@@ -2,7 +2,8 @@
 
 use flip_market::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
 use linera_sdk::{
-    base::{Amount, Owner, WithContractAbi},
+    abi::WithContractAbi,
+    linera_base_types::Amount,
     Contract, ContractRuntime,
 };
 
@@ -23,9 +24,9 @@ impl Contract for FlipMarketContract {
     type Parameters = ();
 
     async fn load(runtime: ContractRuntime<Self>) -> Self {
-        let state = FlipMarketState::load(runtime.root_view_storage_context())
-            .await
-            .expect(\"Failed to load state\");
+        let state = bcs::from_bytes(
+            &runtime.key_value_store().load_key_value(b"state").await.unwrap_or_default()
+        ).unwrap_or_default();
         FlipMarketContract { state, runtime }
     }
 
@@ -36,7 +37,7 @@ impl Contract for FlipMarketContract {
     async fn execute_operation(&mut self, operation: Self::Operation) -> Self::Response {
         match operation {
             Operation::CreateFlip { bet_amount } => {
-                let flip_id = self.state.next_flip_id.get();
+                let flip_id = self.state.next_flip_id;
                 let creator = self
                     .runtime
                     .authenticated_signer()
@@ -44,7 +45,7 @@ impl Contract for FlipMarketContract {
 
                 let flip = Flip {
                     id: flip_id,
-                    creator,
+                    creator: creator.to_string(),
                     bet_amount,
                     player1: None,
                     player2: None,
@@ -52,8 +53,8 @@ impl Contract for FlipMarketContract {
                     winner: None,
                 };
 
-                self.state.flips.insert(&flip_id, flip).expect(\"Failed to insert flip\");
-                self.state.next_flip_id.set(flip_id + 1);
+                self.state.flips.insert(flip_id, flip);
+                self.state.next_flip_id = flip_id + 1;
             }
             Operation::PlaceBet { flip_id, prediction } => {
                 let player = self
@@ -65,15 +66,14 @@ impl Contract for FlipMarketContract {
                     .state
                     .flips
                     .get(&flip_id)
-                    .await
-                    .expect(\"Failed to get flip\")
-                    .expect(\"Flip not found\");
+                    .cloned()
+                    .expect("Flip not found");
 
                 if flip.player1.is_none() {
-                    flip.player1 = Some((player, prediction));
-                    self.state.flips.insert(&flip_id, flip).expect(\"Failed to update flip\");
-                } else if flip.player2.is_none() && flip.player1.as_ref().unwrap().0 != player {
-                    flip.player2 = Some((player, prediction));
+                    flip.player1 = Some((player.to_string(), prediction));
+                    self.state.flips.insert(flip_id, flip);
+                } else if flip.player2.is_none() && flip.player1.as_ref().unwrap().0 != player.to_string() {
+                    flip.player2 = Some((player.to_string(), prediction));
                     
                     let random = self.runtime.system_time().micros() % 2;
                     flip.result = if random == 0 {
@@ -83,14 +83,14 @@ impl Contract for FlipMarketContract {
                     };
 
                     if flip.player1.as_ref().unwrap().1 == flip.result.unwrap() {
-                        flip.winner = Some(flip.player1.as_ref().unwrap().0);
-                        self.update_leaderboard(flip.player1.as_ref().unwrap().0).await;
+                        flip.winner = Some(flip.player1.as_ref().unwrap().0.clone());
+                        self.update_leaderboard(flip.player1.as_ref().unwrap().0.clone()).await;
                     } else {
-                        flip.winner = Some(flip.player2.as_ref().unwrap().0);
-                        self.update_leaderboard(flip.player2.as_ref().unwrap().0).await;
+                        flip.winner = Some(flip.player2.as_ref().unwrap().0.clone());
+                        self.update_leaderboard(flip.player2.as_ref().unwrap().0.clone()).await;
                     }
 
-                    self.state.flips.insert(&flip_id, flip).expect(\"Failed to update flip\");
+                    self.state.flips.insert(flip_id, flip);
                 }
             }
         }
@@ -101,23 +101,14 @@ impl Contract for FlipMarketContract {
     }
 
     async fn store(mut self) {
-        self.state.save().await.expect(\"Failed to save state\");
+        let data = bcs::to_bytes(&self.state).expect("Failed to serialize state");
+        self.runtime.key_value_store().insert_key_value(b"state".to_vec(), data).await;
     }
 }
 
 impl FlipMarketContract {
-    async fn update_leaderboard(&mut self, owner: Owner) {
-        let current_score = self
-            .state
-            .leaderboard
-            .get(&owner)
-            .await
-            .expect(\"Failed to get score\")
-            .unwrap_or(0);
-        
-        self.state
-            .leaderboard
-            .insert(&owner, current_score + 1)
-            .expect(\"Failed to update leaderboard\");
+    async fn update_leaderboard(&mut self, owner: String) {
+        let current_score = self.state.leaderboard.get(&owner).cloned().unwrap_or(0);
+        self.state.leaderboard.insert(owner, current_score + 1);
     }
 }

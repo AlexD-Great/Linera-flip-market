@@ -1,13 +1,13 @@
 use linera_sdk::{
-    base::{Amount, Owner, WithContractAbi},
-    views::{RootView, View},
-    Contract, ContractRuntime, Service, ServiceRuntime,
+    abi::ContractAbi,
+    linera_base_types::Amount,
 };
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 pub struct FlipMarketAbi;
 
-impl WithContractAbi for FlipMarketAbi {
+impl ContractAbi for FlipMarketAbi {
     type Operation = Operation;
     type Response = ();
 }
@@ -27,17 +27,17 @@ pub enum CoinSide {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Flip {
     pub id: u64,
-    pub creator: Owner,
+    pub creator: String,
     pub bet_amount: Amount,
-    pub player1: Option<(Owner, CoinSide)>,
-    pub player2: Option<(Owner, CoinSide)>,
+    pub player1: Option<(String, CoinSide)>,
+    pub player2: Option<(String, CoinSide)>,
     pub result: Option<CoinSide>,
-    pub winner: Option<Owner>,
+    pub winner: Option<String>,
 }
 
-#[derive(RootView)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct FlipMarketState {
-    pub flips: linera_sdk::views::MapView<u64, Flip>,
-    pub next_flip_id: linera_sdk::views::RegisterView<u64>,
-    pub leaderboard: linera_sdk::views::MapView<Owner, u64>,
+    pub flips: HashMap<u64, Flip>,
+    pub next_flip_id: u64,
+    pub leaderboard: HashMap<String, u64>,
 }

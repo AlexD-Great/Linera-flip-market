@@ -2,7 +2,7 @@
 
 use async_graphql::{EmptySubscription, Object, Request, Response, Schema};
 use flip_market::{FlipMarketState};
-use linera_sdk::{base::Owner, Service, ServiceRuntime};
+use linera_sdk::{Service, ServiceRuntime};
 use std::sync::Arc;
 
 pub struct FlipMarketService {
@@ -15,9 +15,9 @@ impl Service for FlipMarketService {
     type Parameters = ();
 
     async fn new(runtime: ServiceRuntime<Self>) -> Self {
-        let state = FlipMarketState::load(runtime.root_view_storage_context())
-            .await
-            .expect(\"Failed to load state\");
+        let state: FlipMarketState = bcs::from_bytes(
+            &runtime.key_value_store().load_key_value(b"state").await.unwrap_or_default()
+        ).unwrap_or_default();
         FlipMarketService {
             state: Arc::new(state),
         }
@@ -44,46 +44,37 @@ struct QueryRoot {
 #[Object]
 impl QueryRoot {
     async fn flips(&self) -> Vec<FlipInfo> {
-        let mut flips = Vec::new();
         self.state
             .flips
-            .for_each_index_value(|id, flip| {
-                flips.push(FlipInfo {
-                    id,
-                    creator: flip.creator.to_string(),
-                    bet_amount: flip.bet_amount.to_string(),
-                    status: if flip.result.is_some() {
-                        \"Resolved\".to_string()
-                    } else if flip.player2.is_some() {
-                        \"Full\".to_string()
-                    } else if flip.player1.is_some() {
-                        \"Waiting\".to_string()
-                    } else {
-                        \"Open\".to_string()
-                    },
-                    result: flip.result.map(|r| format!(\"{:?}\", r)),
-                    winner: flip.winner.map(|w| w.to_string()),
-                });
-                Ok(())
+            .iter()
+            .map(|(id, flip)| FlipInfo {
+                id: *id,
+                creator: flip.creator.clone(),
+                bet_amount: flip.bet_amount.to_string(),
+                status: if flip.result.is_some() {
+                    "Resolved".to_string()
+                } else if flip.player2.is_some() {
+                    "Full".to_string()
+                } else if flip.player1.is_some() {
+                    "Waiting".to_string()
+                } else {
+                    "Open".to_string()
+                },
+                result: flip.result.map(|r| format!("{:?}", r)),
+                winner: flip.winner.clone(),
             })
-            .await
-            .expect(\"Failed to iterate flips\");
-        flips
+            .collect()
     }
 
     async fn leaderboard(&self) -> Vec<LeaderboardEntry> {
-        let mut entries = Vec::new();
-        self.state
+        let mut entries: Vec<LeaderboardEntry> = self.state
             .leaderboard
-            .for_each_index_value(|owner, score| {
-                entries.push(LeaderboardEntry {
-                    player: owner.to_string(),
-                    wins: score,
-                });
-                Ok(())
+            .iter()
+            .map(|(player, wins)| LeaderboardEntry {
+                player: player.clone(),
+                wins: *wins,
             })
-            .await
-            .expect(\"Failed to iterate leaderboard\");
+            .collect();
         entries.sort_by(|a, b| b.wins.cmp(&a.wins));
         entries
     }
