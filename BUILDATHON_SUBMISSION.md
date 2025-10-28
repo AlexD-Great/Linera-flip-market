@@ -4,7 +4,7 @@
 
 **Project Name**: Linera Flip Market  
 **Category**: DeFi / Gaming  
-**Developer**: AlexD-Great  
+**Developer**: Adam  
 **Submission Date**: October 28, 2025  
 **Buildathon**: Linera Wave 1 (October 20 - November 20, 2025)
 
@@ -352,6 +352,7 @@ The smart contract code is production-ready and can be deployed to testnet when 
 - **GitHub**: https://github.com/AlexD-Great/Linera-flip-market
 
 ### Developer
+- **Name**: Adam
 - **GitHub**: [@AlexD-Great](https://github.com/AlexD-Great)
 - **Twitter**: [@Adam_shelbie](https://twitter.com/Adam_shelbie)
 - **Email**: muhammedadam305@gmail.com

@@ -150,7 +150,7 @@ Contributions welcome! Please open an issue or PR.
 
 ## 📧 Contact
 
-**Developer**: AlexD-Great
+**Developer**: Adam
 - GitHub: [@AlexD-Great](https://github.com/AlexD-Great)
 - Twitter: [@Adam_shelbie](https://twitter.com/Adam_shelbie)
 - Email: muhammedadam305@gmail.com

@@ -79,7 +79,7 @@ export default function Footer() {
               Developer
             </h3>
             <p className="text-gray-400 mb-2 text-sm">
-              <span className="font-semibold text-white">AlexD-Great</span>
+              <span className="font-semibold text-white">Adam</span>
             </p>
             <p className="text-gray-400 mb-4 text-sm leading-relaxed">
               Blockchain developer passionate about building decentralized 
