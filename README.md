@@ -123,6 +123,8 @@ linera-flip-market/
 
 This project is submitted for the Linera Buildathon Wave 1 (October 20th - November 20th, 2025).
 
+📅 **[View Buildathon Roadmap](ROADMAP.md)** - Detailed timeline and milestones
+
 ### Why Linera?
 
 - **Microchains** - Each flip can run on its own chain for maximum parallelism
