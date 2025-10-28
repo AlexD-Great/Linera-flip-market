@@ -10,11 +10,12 @@ import { Loader2 } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('flips');
-  const { flips, fetchFlips, isLoading } = useFlipMarketStore();
+  const { flips, fetchFlips, isLoading, initWalletListeners } = useFlipMarketStore();
 
   useEffect(() => {
     fetchFlips();
-  }, [fetchFlips]);
+    initWalletListeners();
+  }, [fetchFlips, initWalletListeners]);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">

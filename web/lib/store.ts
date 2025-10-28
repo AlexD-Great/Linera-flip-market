@@ -14,8 +14,9 @@ interface FlipMarketStore {
   fetchLeaderboard: () => Promise<void>;
   createFlip: (betAmount: string) => Promise<void>;
   placeBet: (flipId: number, prediction: CoinSide) => Promise<void>;
-  connectWallet: () => void;
+  connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
+  initWalletListeners: () => void;
 }
 
 export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
@@ -86,13 +87,52 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
     }
   },
 
-  connectWallet: () => {
-    // Simulate wallet connection - generate random address
-    const randomAddress = '0x' + Math.random().toString(16).substring(2, 18);
-    set({ currentUser: randomAddress });
+  connectWallet: async () => {
+    try {
+      // Check if MetaMask is installed
+      if (typeof window.ethereum === 'undefined') {
+        alert('MetaMask is not installed! Please install MetaMask to connect your wallet.');
+        return;
+      }
+
+      // Request account access
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_requestAccounts' 
+      });
+
+      if (accounts.length > 0) {
+        set({ currentUser: accounts[0] });
+      }
+    } catch (error: any) {
+      if (error.code === 4001) {
+        // User rejected the connection
+        alert('Wallet connection rejected. Please approve the connection to continue.');
+      } else {
+        console.error('Error connecting wallet:', error);
+        alert('Failed to connect wallet. Please try again.');
+      }
+    }
   },
 
   disconnectWallet: () => {
     set({ currentUser: null });
+  },
+
+  initWalletListeners: () => {
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.on) {
+      // Listen for account changes
+      window.ethereum.on('accountsChanged', (accounts: string[]) => {
+        if (accounts.length > 0) {
+          set({ currentUser: accounts[0] });
+        } else {
+          set({ currentUser: null });
+        }
+      });
+
+      // Listen for chain changes (reload page)
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload();
+      });
+    }
   },
 }));
