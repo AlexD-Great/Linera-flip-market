@@ -5,6 +5,7 @@ import FlipCard from '@/components/FlipCard';
 import CreateFlip from '@/components/CreateFlip';
 import Leaderboard from '@/components/Leaderboard';
 import WalletConnect from '@/components/WalletConnect';
+import Footer from '@/components/Footer';
 import { useFlipMarketStore } from '@/lib/store';
 import { Loader2, Coins, PlusCircle, Trophy } from 'lucide-react';
 
@@ -90,6 +91,7 @@ export default function Home() {
           {activeTab === 'leaderboard' && <Leaderboard />}
         </div>
       </div>
+      <Footer />
     </main>
   );
 }
