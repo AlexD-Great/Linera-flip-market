@@ -1,8 +1,11 @@
 # 🗺️ Linera Flip Market - Buildathon Roadmap
 
-**Buildathon Period**: October 20 - November 20, 2025  
+## 🚨 URGENT: Wave 1 Deadline
+
+**Wave 1 Build Phase**: October 20 - October 29, 2025  
+**Wave 1 Evaluation**: October 30 - November 2, 2025  
 **Current Date**: October 28, 2025  
-**Days Remaining**: 23 days
+**⏰ TIME REMAINING: ~1 DAY TO SUBMIT!**
 
 ---
 
@@ -23,62 +26,110 @@
 - [x] Live demo deployment (Vercel)
 - [x] GitHub repository setup
 
-### 📈 Progress: 70% Complete
+### 📈 Progress: 95% Complete - Ready for Wave 1 Submission!
 
 ---
 
-## 🎯 Phase 1: Polish & Enhancement (Oct 28 - Nov 3)
-**Goal**: Enhance user experience and add missing features
+## 🎯 Wave Schedule
 
-### Week 2-3 Tasks
+| Wave | Build Phase | Evaluation | Prize |
+|------|-------------|------------|-------|
+| **Wave 1** | **Oct 20 - Oct 29** | **Oct 30 - Nov 2** | **3,000 USDC** |
+| Wave 2 | Nov 3 - Nov 12 | Nov 13 - Nov 16 | 5,000 USDC |
+| Wave 3 | Nov 17 - Nov 26 | Nov 27 - Nov 30 | 7,000 USDC |
+| Wave 4 | Dec 1 - Dec 10 | Dec 11 - Dec 14 | 9,000 USDC |
+| Wave 5 | Dec 15 - Jan 7 | Jan 8 - Jan 11 | 11,000 USDC |
+| Wave 6 | Jan 12 - Jan 21 | Jan 22 - Jan 25 | 15,000 USDC |
 
-#### High Priority 🔴
-- [ ] **Record Demo Video** (Oct 29-30)
-  - Screen recording of full user flow
-  - Voiceover explaining features
-  - Show wallet connection
-  - Demonstrate flip creation and betting
-  - Highlight instant resolution
-  - Upload to YouTube/Loom
+---
+
+## 🚨 IMMEDIATE ACTION REQUIRED (Oct 28-29)
+
+### ⏰ TODAY (Oct 28) - Final Preparations
+
+#### Critical Tasks (Complete by End of Day) 🔴
+
+- [ ] **Final Code Review** (2 hours)
+  - Check all files committed
+  - Verify live demo works
+  - Test all features
+  - Fix any critical bugs
+
+- [ ] **Documentation Check** (1 hour)
+  - Review README.md
+  - Verify all links work
+  - Check contact information
+  - Update any outdated info
+
+- [ ] **Prepare Submission Materials** (2 hours)
+  - Screenshots of working app
+  - List of features
+  - Technical highlights
+  - Submission description
+
+### ⏰ TOMORROW (Oct 29) - SUBMISSION DAY
+
+#### Morning (9 AM - 12 PM) 🌅
+
+- [ ] **Quick Demo Video** (2-3 hours)
+  - Simple screen recording (3-5 min)
+  - Show: Connect wallet → Create flip → Place bet → See result
+  - No need for professional editing
+  - Upload to YouTube (unlisted is fine)
   - Add link to README
 
-- [ ] **Add Coin Flip Animation** (Oct 30-31)
-  - Animated coin flip when game resolves
-  - Smooth transitions
-  - Visual feedback for win/loss
-  - Sound effects (optional)
+- [ ] **Final Testing** (1 hour)
+  - Test live demo one more time
+  - Check on mobile
+  - Verify all links
+  - Test wallet connection
 
-- [ ] **Improve Mobile Responsiveness** (Oct 31 - Nov 1)
-  - Test on various screen sizes
-  - Optimize touch interactions
-  - Improve mobile navigation
-  - Test on real devices
+#### Afternoon (1 PM - 5 PM) 🚀
 
-#### Medium Priority 🟡
-- [ ] **Add Loading Skeletons** (Nov 1-2)
-  - Skeleton screens for flip cards
-  - Loading states for leaderboard
-  - Smooth loading transitions
-  - Better perceived performance
+- [ ] **Submit to Wave 1** (DEADLINE: Oct 29 EOD)
+  - Fill out submission form
+  - Include GitHub repo link
+  - Include live demo link
+  - Include demo video link
+  - Submit before deadline!
 
-- [ ] **Enhanced Error Handling** (Nov 2-3)
-  - User-friendly error messages
-  - Retry mechanisms
-  - Fallback states
-  - Better error recovery
-
-- [ ] **Add Statistics Dashboard** (Nov 3)
-  - Total flips created
-  - Total bets placed
-  - Win/loss ratios
-  - Player statistics
+- [ ] **Backup & Document** (30 min)
+  - Save submission confirmation
+  - Screenshot submission
+  - Note submission time
+  - Celebrate! 🎉
 
 ---
 
-## 🚀 Phase 2: Testnet Deployment (Nov 4-10)
-**Goal**: Deploy smart contract to Linera testnet
+## 📋 Wave 1 Submission Checklist
 
-### Week 3-4 Tasks
+### ✅ What You Already Have (Ready to Submit!)
+
+- [x] **Working Live Demo**: https://linera-flip-market.vercel.app
+- [x] **Complete Smart Contract**: Audited Rust code
+- [x] **Professional Frontend**: Next.js with beautiful UI
+- [x] **Full Documentation**: README, AUDIT_REPORT, DEPLOYMENT_GUIDE
+- [x] **GitHub Repository**: Public and organized
+- [x] **Code Quality**: Latest Linera standards (testnet_conway)
+- [x] **Wallet Integration**: MetaMask working
+- [x] **All Features**: Create flips, place bets, leaderboard
+
+### 📝 What You Need (By Tomorrow)
+
+- [ ] **Demo Video** (3-5 minutes) - Simple screen recording
+- [ ] **Screenshots** - 3-5 images of key features
+- [ ] **Submission Form** - Fill out and submit
+
+### 🎯 You're 95% Done! Just need video + submit!
+
+---
+
+## 🎊 After Wave 1 Submission (Nov 3-12)
+
+### Wave 2 Preparation (Nov 3-12)
+**Prize**: 5,000 USDC (66% more than Wave 1!)  
+**Build Phase**: Nov 3 - Nov 12  
+**Evaluation**: Nov 13 - Nov 16
 
 #### Prerequisites
 - [ ] **Install Development Tools** (Nov 4)
