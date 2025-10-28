@@ -10,11 +10,9 @@ export default function CreateFlip() {
 
   const handleCreate = async () => {
     if (!currentUser) {
-      alert('Please connect your wallet first!');
       return;
     }
     await createFlip(betAmount);
-    alert(`Flip created successfully! 🎉`);
   };
 
   return (

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import toast from 'react-hot-toast';
 import { Flip, LeaderboardEntry, CoinSide } from './types';
 import { mockApi } from './mockApi';
 
@@ -49,18 +50,21 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
   createFlip: async (betAmount: string) => {
     const { currentUser } = get();
     if (!currentUser) {
-      set({ error: 'Please connect wallet first' });
+      toast.error('Please connect wallet first');
       return;
     }
 
     set({ isLoading: true, error: null });
+    const loadingToast = toast.loading('Creating flip...');
     try {
       const newFlip = await mockApi.createFlip(betAmount, currentUser);
       set(state => ({
         flips: [...state.flips, newFlip],
         isLoading: false,
       }));
+      toast.success(`Flip #${newFlip.id} created successfully! 🎉`, { id: loadingToast });
     } catch (error) {
+      toast.error('Failed to create flip', { id: loadingToast });
       set({ error: 'Failed to create flip', isLoading: false });
     }
   },
@@ -68,11 +72,12 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
   placeBet: async (flipId: number, prediction: CoinSide) => {
     const { currentUser } = get();
     if (!currentUser) {
-      set({ error: 'Please connect wallet first' });
+      toast.error('Please connect wallet first');
       return;
     }
 
     set({ isLoading: true, error: null });
+    const loadingToast = toast.loading(`Betting on ${prediction}...`);
     try {
       const updatedFlip = await mockApi.placeBet(flipId, currentUser, prediction);
       set(state => ({
@@ -80,9 +85,22 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
         isLoading: false,
       }));
       
+      // Show result
+      if (updatedFlip.winner) {
+        const isWinner = updatedFlip.winner === currentUser;
+        if (isWinner) {
+          toast.success(`🎉 You won! Result: ${updatedFlip.result}`, { id: loadingToast, duration: 5000 });
+        } else {
+          toast.error(`😔 You lost. Result: ${updatedFlip.result}`, { id: loadingToast, duration: 5000 });
+        }
+      } else {
+        toast.success('Bet placed! Waiting for opponent...', { id: loadingToast });
+      }
+      
       // Refresh leaderboard after bet
       get().fetchLeaderboard();
     } catch (error) {
+      toast.error('Failed to place bet', { id: loadingToast });
       set({ error: 'Failed to place bet', isLoading: false });
     }
   },
@@ -102,14 +120,15 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
 
       if (accounts.length > 0) {
         set({ currentUser: accounts[0] });
+        toast.success('Wallet connected successfully! 🦊');
       }
     } catch (error: any) {
       if (error.code === 4001) {
         // User rejected the connection
-        alert('Wallet connection rejected. Please approve the connection to continue.');
+        toast.error('Wallet connection rejected');
       } else {
         console.error('Error connecting wallet:', error);
-        alert('Failed to connect wallet. Please try again.');
+        toast.error('Failed to connect wallet. Please try again.');
       }
     }
   },

@@ -14,7 +14,6 @@ export default function FlipCard({ flip }: FlipCardProps) {
 
   const handleBet = async (prediction: CoinSide) => {
     if (!currentUser) {
-      alert('Please connect your wallet first!');
       return;
     }
     await placeBet(flip.id, prediction);
