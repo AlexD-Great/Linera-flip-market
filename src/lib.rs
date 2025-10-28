@@ -4,6 +4,19 @@ use linera_sdk::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum FlipMarketError {
+    #[error("Flip not found: {0}")]
+    FlipNotFound(u64),
+    #[error("Player already in flip")]
+    PlayerAlreadyInFlip,
+    #[error("Flip already full")]
+    FlipAlreadyFull,
+    #[error("Missing signer")]
+    MissingSigner,
+}
 
 pub struct FlipMarketAbi;
 
