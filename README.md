@@ -121,7 +121,7 @@ linera-flip-market/
 
 ## 🎯 Linera Buildathon Wave 1
 
-This project is submitted for the Linera Buildathon Wave 1 (October 2025).
+This project is submitted for the Linera Buildathon Wave 1 (October 20th - November 20th, 2025).
 
 ### Why Linera?
 
@@ -147,6 +147,11 @@ MIT License - see [LICENSE](LICENSE) file
 Contributions welcome! Please open an issue or PR.
 
 ## 📧 Contact
+
+**Developer**: AlexD-Great
+- GitHub: [@AlexD-Great](https://github.com/AlexD-Great)
+- Twitter: [@Adam_shelbie](https://twitter.com/Adam_shelbie)
+- Email: muhammedadam305@gmail.com
 
 Built with ❤️ for the Linera Buildathon
 

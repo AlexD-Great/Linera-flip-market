@@ -85,7 +85,7 @@ export default function Footer() {
               Blockchain developer passionate about building decentralized 
               applications and exploring cutting-edge Web3 technologies.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <a
                 href="https://github.com/AlexD-Great"
                 target="_blank"
@@ -96,13 +96,20 @@ export default function Footer() {
                 GitHub
               </a>
               <a
-                href="https://twitter.com/AlexD_Great"
+                href="https://twitter.com/Adam_shelbie"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors text-sm"
               >
                 <Twitter className="w-4 h-4" />
                 Twitter
+              </a>
+              <a
+                href="mailto:muhammedadam305@gmail.com"
+                className="flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors text-sm"
+              >
+                <Globe className="w-4 h-4" />
+                Email
               </a>
             </div>
           </div>
