@@ -6,7 +6,7 @@ import CreateFlip from '@/components/CreateFlip';
 import Leaderboard from '@/components/Leaderboard';
 import WalletConnect from '@/components/WalletConnect';
 import { useFlipMarketStore } from '@/lib/store';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Coins, PlusCircle, Trophy } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('flips');
@@ -32,36 +32,39 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-4 mb-8 flex-wrap">
           <button
             onClick={() => setActiveTab('flips')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
               activeTab === 'flips'
                 ? 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg'
                 : 'bg-gray-800 hover:bg-gray-700'
             }`}
           >
-            🎲 Active Flips
+            <Coins className="w-5 h-5" />
+            Active Flips
           </button>
           <button
             onClick={() => setActiveTab('create')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
               activeTab === 'create'
                 ? 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg'
                 : 'bg-gray-800 hover:bg-gray-700'
             }`}
           >
-            ➕ Create Flip
+            <PlusCircle className="w-5 h-5" />
+            Create Flip
           </button>
           <button
             onClick={() => setActiveTab('leaderboard')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
               activeTab === 'leaderboard'
                 ? 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg'
                 : 'bg-gray-800 hover:bg-gray-700'
             }`}
           >
-            🏆 Leaderboard
+            <Trophy className="w-5 h-5" />
+            Leaderboard
           </button>
         </div>
 

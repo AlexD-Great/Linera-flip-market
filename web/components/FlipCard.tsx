@@ -3,7 +3,7 @@
 import { useFlipMarketStore } from '@/lib/store';
 import { shortenAddress } from '@/lib/utils';
 import { CoinSide, Flip } from '@/lib/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CircleDollarSign, Target } from 'lucide-react';
 
 interface FlipCardProps {
   flip: Flip;
@@ -51,9 +51,19 @@ export default function FlipCard({ flip }: FlipCardProps) {
 
       {isResolved && flip.result && (
         <div className="mb-4 p-3 bg-gray-700 rounded-lg">
-          <p className="text-center text-xl font-bold">
-            Result: {flip.result === CoinSide.Heads ? '🪙 Heads' : '🎯 Tails'}
-          </p>
+          <div className="flex items-center justify-center gap-2 text-xl font-bold mb-2">
+            {flip.result === CoinSide.Heads ? (
+              <>
+                <CircleDollarSign className="w-6 h-6 text-yellow-400" />
+                <span>Heads</span>
+              </>
+            ) : (
+              <>
+                <Target className="w-6 h-6 text-red-400" />
+                <span>Tails</span>
+              </>
+            )}
+          </div>
           {flip.winner && (
             <p className="text-center text-green-400 mt-2">
               Winner: {shortenAddress(flip.winner)}
@@ -67,16 +77,30 @@ export default function FlipCard({ flip }: FlipCardProps) {
           <button 
             onClick={() => handleBet(CoinSide.Heads)}
             disabled={isLoading}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-4 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : '🪙 Bet Heads'}
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <CircleDollarSign className="w-5 h-5" />
+                <span>Bet Heads</span>
+              </>
+            )}
           </button>
           <button 
             onClick={() => handleBet(CoinSide.Tails)}
             disabled={isLoading}
-            className="flex-1 bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 px-4 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : '🎯 Bet Tails'}
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <Target className="w-5 h-5" />
+                <span>Bet Tails</span>
+              </>
+            )}
           </button>
         </div>
       )}
