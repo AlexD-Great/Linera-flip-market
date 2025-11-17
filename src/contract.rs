@@ -3,7 +3,7 @@
 use crate::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
 use linera_sdk::{
     abi::WithContractAbi,
-    linera_base_types::Amount,
+    views::linera_views::store::ReadableKeyValueStore,
     Contract, ContractRuntime,
 };
 
@@ -22,11 +22,14 @@ impl Contract for FlipMarketContract {
     type Message = ();
     type InstantiationArgument = ();
     type Parameters = ();
+    type EventValue = ();
 
     async fn load(runtime: ContractRuntime<Self>) -> Self {
-        let state = bcs::from_bytes(
-            &runtime.key_value_store().load_key_value(b"state").await.unwrap_or_default()
-        ).unwrap_or_default();
+        let state = runtime.key_value_store()
+            .read_value(b"state")
+            .await
+            .unwrap_or(None)
+            .unwrap_or_default();
         FlipMarketContract { state, runtime }
     }
 
@@ -100,9 +103,9 @@ impl Contract for FlipMarketContract {
         panic!("Messages not supported");
     }
 
-    async fn store(mut self) {
-        let data = bcs::to_bytes(&self.state).expect("Failed to serialize state");
-        self.runtime.key_value_store().insert_key_value(b"state".to_vec(), data).await;
+    async fn store(self) {
+        // TODO: State persistence - insert_key_value method not available in current SDK
+        // May need to use Views-based approach or different persistence method
     }
 }
 

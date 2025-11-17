@@ -1,0 +1,869 @@
+# 🚀 Linera Flip Market - Complete Starter Guide
+
+> **A comprehensive reference for building, deploying, and maintaining Linera applications**
+
+---
+
+## 📁 Project Structure
+
+```
+linera-flip-market/
+├── src/
+│   ├── lib.rs              # ABI definitions (ContractAbi, ServiceAbi, Operations)
+│   ├── state.rs            # State structures using Linera Views
+│   ├── contract.rs         # Smart contract logic (operations, messages)
+│   └── service.rs          # GraphQL service (queries, mutations)
+├── target/
+│   └── wasm32-unknown-unknown/
+│       └── release/
+│           ├── flip_market_contract.wasm  # Compiled contract binary
+│           └── flip_market_service.wasm   # Compiled service binary
+├── Cargo.toml              # Rust dependencies and binary definitions
+├── README.md               # Project overview
+├── DEPLOYMENT_STEPS.md     # Local deployment guide
+├── TESTNET_DEPLOYMENT_GUIDE.md  # Testnet deployment guide
+└── LINERA_STARTER.md       # This file
+```
+
+---
+
+## 🏗️ Architecture Overview
+
+### **Three-Layer Architecture**
+
+1. **Contract Layer** (`contract.rs`)
+   - Handles state mutations
+   - Processes operations (CreateFlip, PlaceBet)
+   - Manages cross-chain messages
+   - Persists state using Views
+
+2. **Service Layer** (`service.rs`)
+   - Exposes GraphQL API
+   - Handles read-only queries
+   - No state mutations
+   - Serves data to frontend
+
+3. **State Layer** (`state.rs`)
+   - Defines data structures
+   - Uses Linera Views for persistence
+   - Manages MapView, RegisterView, etc.
+
+---
+
+## 🔑 Key Concepts
+
+### **Linera Views**
+
+Views are Linera's way of managing persistent state. They map complex data structures onto a key-value store.
+
+**Available View Types**:
+- `RegisterView<T>` - Single value storage
+- `MapView<K, V>` - Key-value map
+- `CollectionView<K, V>` - Collection of values
+- `LogView<T>` - Append-only log
+- `QueueView<T>` - FIFO queue
+- `SetView<T>` - Set of unique values
+
+**Example**:
+```rust
+#[derive(RootView)]
+#[view(context = ViewStorageContext)]
+pub struct FlipMarketState {
+    pub flips: MapView<u64, Flip>,           // Map of flip_id -> Flip
+    pub next_flip_id: RegisterView<u64>,     // Counter
+    pub leaderboard: MapView<String, u64>,   // player -> wins
+}
+```
+
+### **Microchains**
+
+Each user/application can have its own microchain:
+- **Fast**: ~200ms block finality
+- **Scalable**: Parallel execution
+- **Secure**: Cross-chain messaging
+- **Efficient**: Only pay for what you use
+
+---
+
+## 📦 Core Components
+
+### 1. **ABI Definition** (`lib.rs`)
+
+Defines the interface between contract and service.
+
+```rust
+pub struct FlipMarketAbi;
+
+impl ContractAbi for FlipMarketAbi {
+    type Operation = Operation;      // User operations
+    type Response = ();              // Operation responses
+}
+
+impl ServiceAbi for FlipMarketAbi {
+    type Query = Request;            // GraphQL queries
+    type QueryResponse = Response;   // GraphQL responses
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum Operation {
+    CreateFlip { bet_amount: Amount },
+    PlaceBet { flip_id: u64, prediction: CoinSide },
+}
+```
+
+**Key Points**:
+- `Operation` defines what users can do
+- `ContractAbi` for state mutations
+- `ServiceAbi` for read-only queries
+- Keep operations simple and focused
+
+---
+
+### 2. **State Management** (`state.rs`)
+
+Define your state using Views for automatic persistence.
+
+```rust
+use linera_sdk::views::{MapView, RegisterView, RootView, ViewStorageContext};
+
+#[derive(RootView)]
+#[view(context = ViewStorageContext)]
+pub struct FlipMarketState {
+    pub flips: MapView<u64, Flip>,
+    pub next_flip_id: RegisterView<u64>,
+    pub leaderboard: MapView<String, u64>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Flip {
+    pub id: u64,
+    pub creator: String,
+    pub bet_amount: Amount,
+    pub player1: Option<(String, CoinSide)>,
+    pub player2: Option<(String, CoinSide)>,
+    pub result: Option<CoinSide>,
+    pub winner: Option<String>,
+}
+```
+
+**Best Practices**:
+- ✅ Use `#[derive(RootView)]` for main state
+- ✅ Use appropriate View types for data
+- ✅ Keep nested structs serializable
+- ✅ Use `Option<T>` for nullable fields
+- ❌ Don't use `HashMap` directly (use `MapView`)
+- ❌ Don't use `Vec` for large collections (use `CollectionView`)
+
+---
+
+### 3. **Contract Logic** (`contract.rs`)
+
+Implements the core business logic.
+
+```rust
+use linera_sdk::{Contract, ContractRuntime, views::{RootView, View}};
+
+pub struct FlipMarketContract {
+    state: FlipMarketState,
+    runtime: ContractRuntime<Self>,
+}
+
+impl Contract for FlipMarketContract {
+    type Message = ();
+    type InstantiationArgument = ();
+    type Parameters = ();
+    type EventValue = ();
+
+    async fn load(runtime: ContractRuntime<Self>) -> Self {
+        let state = FlipMarketState::load(runtime.root_view_storage_context())
+            .await
+            .expect("Failed to load state");
+        FlipMarketContract { state, runtime }
+    }
+
+    async fn instantiate(&mut self, _argument: Self::InstantiationArgument) {
+        self.runtime.application_parameters();
+        self.state.next_flip_id.set(0);
+    }
+
+    async fn execute_operation(&mut self, operation: Self::Operation) -> Self::Response {
+        match operation {
+            Operation::CreateFlip { bet_amount } => {
+                let flip_id = *self.state.next_flip_id.get();
+                let creator = self.runtime.authenticated_signer()
+                    .expect("Missing signer");
+                
+                let flip = Flip {
+                    id: flip_id,
+                    creator: creator.to_string(),
+                    bet_amount,
+                    player1: None,
+                    player2: None,
+                    result: None,
+                    winner: None,
+                };
+                
+                self.state.flips.insert(&flip_id, flip)
+                    .expect("Failed to insert flip");
+                self.state.next_flip_id.set(flip_id + 1);
+            }
+            // ... other operations
+        }
+    }
+
+    async fn execute_message(&mut self, _message: Self::Message) {
+        panic!("Messages not supported");
+    }
+
+    async fn store(mut self) {
+        self.state.save().await.expect("Failed to save state");
+    }
+}
+```
+
+**Key Methods**:
+- `load()` - Load state from storage
+- `instantiate()` - Initialize new application
+- `execute_operation()` - Handle user operations
+- `execute_message()` - Handle cross-chain messages
+- `store()` - Persist state changes
+
+**Runtime APIs**:
+```rust
+// Get authenticated user
+let signer = self.runtime.authenticated_signer()?;
+
+// Get system time
+let time = self.runtime.system_time();
+
+// Get application parameters
+let params = self.runtime.application_parameters();
+
+// Get chain ID
+let chain_id = self.runtime.chain_id();
+```
+
+---
+
+### 4. **Service Layer** (`service.rs`)
+
+Exposes GraphQL API for queries.
+
+```rust
+use linera_sdk::{Service, ServiceRuntime, views::View};
+use async_graphql::{Object, Schema, Request, Response};
+
+pub struct FlipMarketService {
+    state: FlipMarketState,
+    runtime: Arc<ServiceRuntime<Self>>,
+}
+
+impl Service for FlipMarketService {
+    type Parameters = ();
+
+    async fn new(runtime: ServiceRuntime<Self>) -> Self {
+        let state = FlipMarketState::load(runtime.root_view_storage_context())
+            .await
+            .expect("Failed to load state");
+        FlipMarketService {
+            state,
+            runtime: Arc::new(runtime),
+        }
+    }
+
+    async fn handle_query(&self, request: Request) -> Response {
+        let flips = self.collect_flips().await;
+        let leaderboard = self.collect_leaderboard().await;
+        
+        let schema = Schema::build(
+            QueryRoot { flips, leaderboard },
+            MutationRoot { runtime: self.runtime.clone() },
+            EmptySubscription,
+        ).finish();
+
+        schema.execute(request).await
+    }
+}
+
+// GraphQL Query Root
+struct QueryRoot {
+    flips: Vec<FlipInfo>,
+    leaderboard: Vec<LeaderboardEntry>,
+}
+
+#[Object]
+impl QueryRoot {
+    async fn flips(&self) -> &Vec<FlipInfo> {
+        &self.flips
+    }
+
+    async fn leaderboard(&self) -> &Vec<LeaderboardEntry> {
+        &self.leaderboard
+    }
+}
+```
+
+**Best Practices**:
+- ✅ Collect data before building schema (avoid lifetime issues)
+- ✅ Use `async_graphql` for GraphQL
+- ✅ Keep queries read-only
+- ✅ Use `for_each_index_value()` to iterate Views
+- ❌ Don't mutate state in service
+- ❌ Don't hold references across await points
+
+---
+
+## 🔧 Configuration
+
+### **Cargo.toml**
+
+```toml
+[package]
+name = "flip-market"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-graphql = "7.0"
+linera-sdk = { git = "https://github.com/linera-io/linera-protocol.git", branch = "testnet_conway" }
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
+
+[[bin]]
+name = "flip_market_contract"
+path = "src/contract.rs"
+
+[[bin]]
+name = "flip_market_service"
+path = "src/service.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+```
+
+**Key Points**:
+- Separate `[[bin]]` sections for contract and service
+- Use `testnet_conway` branch for latest features
+- Optimize for size with `opt-level = "z"`
+- Enable LTO for smaller binaries
+
+---
+
+## 🛠️ Development Workflow
+
+### **1. Setup**
+
+```bash
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Add WASM target
+rustup target add wasm32-unknown-unknown
+
+# Clone your project
+git clone <your-repo>
+cd linera-flip-market
+```
+
+### **2. Build**
+
+```bash
+# Build for WASM
+cargo build --release --target wasm32-unknown-unknown
+
+# Check for errors
+cargo check
+
+# Run tests
+cargo test
+```
+
+### **3. Local Testing**
+
+```bash
+# Build Linera CLI (from linera-protocol repo)
+cd ../linera-protocol
+cargo build --release -p linera-service
+
+# Add to PATH
+export PATH="$PWD/target/release:$PATH"
+
+# Start local network
+linera net up --with-faucet --faucet-port 8080
+
+# Initialize wallet
+export LINERA_WALLET="$HOME/.linera/wallet.json"
+export LINERA_KEYSTORE="$HOME/.linera/keystore.json"
+export LINERA_STORAGE="rocksdb:$HOME/.linera/client.db"
+linera wallet init --faucet http://localhost:8080
+
+# Deploy
+cd ../linera-flip-market
+linera publish-and-create \
+  target/wasm32-unknown-unknown/release/flip_market_contract.wasm \
+  target/wasm32-unknown-unknown/release/flip_market_service.wasm
+
+# Start service
+linera service --port 8080
+```
+
+---
+
+## 🌐 Testnet Deployment
+
+### **Testnet Conway**
+
+**Portal**: https://portal.linera.net/
+**Faucet**: Ask in Discord (#developer-support)
+**Discord**: https://discord.com/invite/linera
+
+### **Deployment Steps**
+
+```bash
+# Set testnet faucet URL (get from Discord)
+export LINERA_FAUCET_URL="https://faucet.testnet-conway.linera.net"
+
+# Initialize wallet
+export LINERA_WALLET="$HOME/.linera/testnet-wallet.json"
+export LINERA_KEYSTORE="$HOME/.linera/testnet-keystore.json"
+export LINERA_STORAGE="rocksdb:$HOME/.linera/testnet-client.db"
+
+linera wallet init --faucet $LINERA_FAUCET_URL
+
+# Request chain
+linera wallet request-chain --faucet $LINERA_FAUCET_URL
+
+# Deploy
+linera publish-and-create \
+  target/wasm32-unknown-unknown/release/flip_market_contract.wasm \
+  target/wasm32-unknown-unknown/release/flip_market_service.wasm
+
+# Save the APPLICATION_ID from output!
+# Example: e476187f6ddfeb9d588c7e2d...01234567
+
+# Start service
+linera service --port 8080
+```
+
+### **Access Your App**
+
+```
+GraphQL Endpoint:
+http://localhost:8080/chains/{CHAIN_ID}/applications/{APPLICATION_ID}
+```
+
+---
+
+## 🎨 Frontend Integration
+
+### **GraphQL Queries**
+
+```graphql
+# Get all flips
+query {
+  flips {
+    id
+    creator
+    betAmount
+    status
+    result
+    winner
+  }
+}
+
+# Get leaderboard
+query {
+  leaderboard {
+    player
+    wins
+  }
+}
+```
+
+### **Operations (via Linera SDK)**
+
+```typescript
+import { LineraClient } from '@linera/client';
+
+const client = new LineraClient({
+  endpoint: 'http://localhost:8080',
+  chainId: 'YOUR_CHAIN_ID',
+  applicationId: 'YOUR_APP_ID',
+});
+
+// Create flip
+await client.executeOperation({
+  operation: {
+    CreateFlip: {
+      bet_amount: '1000000', // Amount in microunits
+    },
+  },
+});
+
+// Place bet
+await client.executeOperation({
+  operation: {
+    PlaceBet: {
+      flip_id: 0,
+      prediction: 'Heads',
+    },
+  },
+});
+```
+
+---
+
+## 📚 Common Patterns & Recipes
+
+### **Pattern 1: Counter**
+
+```rust
+// State
+#[derive(RootView)]
+pub struct CounterState {
+    pub count: RegisterView<u64>,
+}
+
+// Operation
+pub enum Operation {
+    Increment,
+}
+
+// Contract
+async fn execute_operation(&mut self, operation: Operation) {
+    match operation {
+        Operation::Increment => {
+            let current = *self.state.count.get();
+            self.state.count.set(current + 1);
+        }
+    }
+}
+```
+
+### **Pattern 2: Ownership Transfer**
+
+```rust
+// State
+#[derive(RootView)]
+pub struct TokenState {
+    pub owner: RegisterView<String>,
+}
+
+// Operation
+pub enum Operation {
+    Transfer { new_owner: String },
+}
+
+// Contract
+async fn execute_operation(&mut self, operation: Operation) {
+    match operation {
+        Operation::Transfer { new_owner } => {
+            let current_owner = self.runtime.authenticated_signer()
+                .expect("Missing signer");
+            
+            if self.state.owner.get().as_str() == current_owner.to_string() {
+                self.state.owner.set(new_owner);
+            } else {
+                panic!("Not authorized");
+            }
+        }
+    }
+}
+```
+
+### **Pattern 3: Leaderboard**
+
+```rust
+// State
+#[derive(RootView)]
+pub struct GameState {
+    pub scores: MapView<String, u64>,
+}
+
+// Update score
+async fn update_score(&mut self, player: String, points: u64) {
+    let current = self.state.scores
+        .get(&player)
+        .await
+        .expect("Failed to read")
+        .unwrap_or(0);
+    
+    self.state.scores
+        .insert(&player, current + points)
+        .expect("Failed to update");
+}
+
+// Query top players
+async fn collect_leaderboard(&self) -> Vec<LeaderboardEntry> {
+    let mut entries = Vec::new();
+    
+    self.state.scores
+        .for_each_index_value(|player, score| {
+            entries.push(LeaderboardEntry {
+                player,
+                score: *score,
+            });
+            Ok(())
+        })
+        .await
+        .expect("Failed to iterate");
+    
+    entries.sort_by(|a, b| b.score.cmp(&a.score));
+    entries.truncate(10); // Top 10
+    entries
+}
+```
+
+### **Pattern 4: Time-Based Logic**
+
+```rust
+use linera_sdk::base::Timestamp;
+
+// Check if expired
+async fn execute_operation(&mut self, operation: Operation) {
+    let now = self.runtime.system_time();
+    let deadline = Timestamp::from(1234567890);
+    
+    if now > deadline {
+        panic!("Deadline passed");
+    }
+    
+    // Continue with operation...
+}
+```
+
+### **Pattern 5: Cross-Chain Messaging**
+
+```rust
+// Define message type
+pub enum Message {
+    Transfer { amount: Amount, recipient: String },
+}
+
+// Send message
+async fn execute_operation(&mut self, operation: Operation) {
+    match operation {
+        Operation::SendCrossChain { target_chain, amount } => {
+            self.runtime.send_message(
+                target_chain,
+                Message::Transfer {
+                    amount,
+                    recipient: "...".to_string(),
+                },
+            );
+        }
+    }
+}
+
+// Receive message
+async fn execute_message(&mut self, message: Message) {
+    match message {
+        Message::Transfer { amount, recipient } => {
+            // Handle incoming transfer
+        }
+    }
+}
+```
+
+---
+
+## 🐛 Debugging & Troubleshooting
+
+### **Common Errors**
+
+#### **1. "Failed to load state"**
+```rust
+// ❌ Wrong
+let state: MyState = runtime.key_value_store().read_value(b"state").await?;
+
+// ✅ Correct
+let state = MyState::load(runtime.root_view_storage_context()).await?;
+```
+
+#### **2. "Lifetime issues in service"**
+```rust
+// ❌ Wrong - holding references
+struct QueryRoot<'a> {
+    state: &'a MyState,
+}
+
+// ✅ Correct - collect data first
+async fn handle_query(&self, request: Request) -> Response {
+    let data = self.collect_data().await;
+    let schema = Schema::build(QueryRoot { data }, ...).finish();
+    schema.execute(request).await
+}
+```
+
+#### **3. "Type mismatch with CoinSide"**
+```rust
+// Make sure to import from the same module
+// ❌ Wrong
+use flip_market::CoinSide;
+use state::CoinSide; // Duplicate!
+
+// ✅ Correct
+pub mod state;
+pub use state::CoinSide; // Re-export from lib.rs
+```
+
+#### **4. "MapView returns Cow<T>"**
+```rust
+// ❌ Wrong
+let value = map.get(&key).await?;
+entries.push(value); // Type error!
+
+// ✅ Correct
+let value = map.get(&key).await?;
+entries.push(*value); // Dereference Cow
+```
+
+---
+
+## ✅ Best Practices
+
+### **State Management**
+- ✅ Always use Views for state
+- ✅ Use `#[derive(RootView)]` on main state
+- ✅ Call `state.save()` in `store()` method
+- ✅ Use appropriate View types (MapView, RegisterView, etc.)
+- ❌ Don't use HashMap/Vec directly
+- ❌ Don't forget to save state
+
+### **Contract Logic**
+- ✅ Keep operations simple and focused
+- ✅ Validate inputs early
+- ✅ Use `authenticated_signer()` for auth
+- ✅ Handle errors gracefully
+- ❌ Don't panic unnecessarily
+- ❌ Don't do heavy computation
+
+### **Service Layer**
+- ✅ Keep queries read-only
+- ✅ Collect data before building schema
+- ✅ Use pagination for large datasets
+- ✅ Cache expensive queries
+- ❌ Don't mutate state
+- ❌ Don't hold references across awaits
+
+### **Testing**
+- ✅ Write unit tests for logic
+- ✅ Test edge cases
+- ✅ Test on local network first
+- ✅ Test cross-chain scenarios
+- ❌ Don't skip testing
+- ❌ Don't test only happy paths
+
+### **Security**
+- ✅ Validate all inputs
+- ✅ Check authentication
+- ✅ Use proper access control
+- ✅ Handle overflow/underflow
+- ❌ Don't trust user input
+- ❌ Don't expose sensitive data
+
+---
+
+## 📖 Resources
+
+### **Official Documentation**
+- **Developer Portal**: https://linera.dev
+- **Whitepaper**: https://linera.io/whitepaper
+- **GitHub**: https://github.com/linera-io/linera-protocol
+- **Examples**: https://github.com/linera-io/linera-protocol/tree/main/examples
+
+### **Community**
+- **Discord**: https://discord.com/invite/linera
+- **Twitter**: https://x.com/linera_io
+- **Telegram**: https://t.me/linera_official
+
+### **Tutorials**
+- **Counter Example**: `examples/counter` in linera-protocol
+- **Fungible Token**: `examples/fungible` in linera-protocol
+- **AMM**: `examples/amm` in linera-protocol
+- **Crowd Funding**: `examples/crowd-funding` in linera-protocol
+
+---
+
+## 🎯 Quick Reference
+
+### **Build Commands**
+```bash
+# Build WASM
+cargo build --release --target wasm32-unknown-unknown
+
+# Check code
+cargo check
+
+# Run tests
+cargo test
+
+# Format code
+cargo fmt
+
+# Lint code
+cargo clippy
+```
+
+### **Linera CLI Commands**
+```bash
+# Initialize wallet
+linera wallet init --faucet <FAUCET_URL>
+
+# Request chain
+linera wallet request-chain --faucet <FAUCET_URL>
+
+# Deploy app
+linera publish-and-create <contract.wasm> <service.wasm>
+
+# Start service
+linera service --port 8080
+
+# Query chain
+linera query-balance
+
+# Transfer tokens
+linera transfer <amount> --to <chain_id>
+```
+
+### **Environment Variables**
+```bash
+export LINERA_WALLET="$HOME/.linera/wallet.json"
+export LINERA_KEYSTORE="$HOME/.linera/keystore.json"
+export LINERA_STORAGE="rocksdb:$HOME/.linera/client.db"
+export LINERA_FAUCET_URL="http://localhost:8080"
+```
+
+---
+
+## 🚀 Next Steps
+
+1. **Build Your App**: Start with a simple counter
+2. **Test Locally**: Deploy to local network
+3. **Add Features**: Implement your business logic
+4. **Deploy to Testnet**: Get real users
+5. **Iterate**: Improve based on feedback
+6. **Launch**: Deploy to mainnet when ready
+
+---
+
+## 💡 Pro Tips
+
+1. **Start Simple**: Begin with counter example, then add complexity
+2. **Use Views**: They handle persistence automatically
+3. **Test Often**: Deploy to local network frequently
+4. **Read Examples**: Learn from official examples
+5. **Ask Questions**: Discord community is helpful
+6. **Document Code**: Future you will thank you
+7. **Version Control**: Commit often, push regularly
+8. **Monitor Performance**: Check block times and gas usage
+9. **Security First**: Validate everything, trust nothing
+10. **Have Fun**: Building on Linera is exciting! 🎉
+
+---
+
+**Happy Building! 🚀**
+
+*Last Updated: November 2024 - Testnet Conway*

@@ -1,8 +1,12 @@
 #![cfg_attr(target_arch = "wasm32", no_main)]
 
 use async_graphql::{EmptySubscription, Object, Request, Response, Schema};
-use crate::FlipMarketState;
-use linera_sdk::{Service, ServiceRuntime};
+use crate::{FlipMarketAbi, FlipMarketState};
+use linera_sdk::{
+    abi::WithServiceAbi,
+    views::linera_views::store::ReadableKeyValueStore,
+    Service, ServiceRuntime,
+};
 use std::sync::Arc;
 
 pub struct FlipMarketService {
@@ -11,13 +15,19 @@ pub struct FlipMarketService {
 
 linera_sdk::service!(FlipMarketService);
 
+impl WithServiceAbi for FlipMarketService {
+    type Abi = FlipMarketAbi;
+}
+
 impl Service for FlipMarketService {
     type Parameters = ();
 
     async fn new(runtime: ServiceRuntime<Self>) -> Self {
-        let state: FlipMarketState = bcs::from_bytes(
-            &runtime.key_value_store().load_key_value(b"state").await.unwrap_or_default()
-        ).unwrap_or_default();
+        let state: FlipMarketState = runtime.key_value_store()
+            .read_value(b"state")
+            .await
+            .unwrap_or(None)
+            .unwrap_or_default();
         FlipMarketService {
             state: Arc::new(state),
         }

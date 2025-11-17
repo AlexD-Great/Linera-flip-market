@@ -2,7 +2,7 @@ pub mod contract;
 pub mod service;
 
 use linera_sdk::{
-    abi::ContractAbi,
+    abi::{ContractAbi, ServiceAbi},
     linera_base_types::Amount,
 };
 use serde::{Deserialize, Serialize};
@@ -26,6 +26,11 @@ pub struct FlipMarketAbi;
 impl ContractAbi for FlipMarketAbi {
     type Operation = Operation;
     type Response = ();
+}
+
+impl ServiceAbi for FlipMarketAbi {
+    type Query = async_graphql::Request;
+    type QueryResponse = async_graphql::Response;
 }
 
 #[derive(Debug, Deserialize, Serialize)]
