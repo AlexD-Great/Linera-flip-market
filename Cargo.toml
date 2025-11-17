@@ -17,4 +17,4 @@ thiserror = "1.0"
 linera-sdk = { git = "https://github.com/linera-io/linera-protocol.git", branch = "testnet_conway", features = ["test"] }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
