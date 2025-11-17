@@ -1,6 +1,6 @@
 #![cfg_attr(target_arch = "wasm32", no_main)]
 
-use flip_market::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
+use crate::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
 use linera_sdk::{
     abi::WithContractAbi,
     linera_base_types::Amount,
@@ -41,7 +41,7 @@ impl Contract for FlipMarketContract {
                 let creator = self
                     .runtime
                     .authenticated_signer()
-                    .expect(\"Missing signer\");
+                    .expect("Missing signer");
 
                 let flip = Flip {
                     id: flip_id,
@@ -60,7 +60,7 @@ impl Contract for FlipMarketContract {
                 let player = self
                     .runtime
                     .authenticated_signer()
-                    .expect(\"Missing signer\");
+                    .expect("Missing signer");
 
                 let mut flip = self
                     .state
@@ -97,7 +97,7 @@ impl Contract for FlipMarketContract {
     }
 
     async fn execute_message(&mut self, _message: Self::Message) {
-        panic!(\"Messages not supported\");
+        panic!("Messages not supported");
     }
 
     async fn store(mut self) {
