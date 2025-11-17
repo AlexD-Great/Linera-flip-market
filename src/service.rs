@@ -1,7 +1,7 @@
 #![cfg_attr(target_arch = "wasm32", no_main)]
 
 use async_graphql::{EmptySubscription, Object, Request, Response, Schema};
-use flip_market::{FlipMarketState};
+use crate::FlipMarketState;
 use linera_sdk::{Service, ServiceRuntime};
 use std::sync::Arc;
 
