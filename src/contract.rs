@@ -1,6 +1,6 @@
 #![cfg_attr(target_arch = "wasm32", no_main)]
 
-use crate::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
+use flip_market::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
 use linera_sdk::{
     abi::WithContractAbi,
     views::linera_views::store::ReadableKeyValueStore,

@@ -1,7 +1,7 @@
 #![cfg_attr(target_arch = "wasm32", no_main)]
 
 use async_graphql::{EmptySubscription, Object, Request, Response, Schema};
-use crate::{FlipMarketAbi, FlipMarketState};
+use flip_market::{FlipMarketAbi, FlipMarketState};
 use linera_sdk::{
     abi::WithServiceAbi,
     views::linera_views::store::ReadableKeyValueStore,

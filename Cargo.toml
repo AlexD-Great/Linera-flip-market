@@ -18,3 +18,15 @@ linera-sdk = { git = "https://github.com/linera-io/linera-protocol.git", branch 
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "flip_market_contract"
+path = "src/contract.rs"
+
+[[bin]]
+name = "flip_market_service"
+path = "src/service.rs"
+
+[package.metadata.linera]
+contract = "flip_market_contract"
+service = "flip_market_service"

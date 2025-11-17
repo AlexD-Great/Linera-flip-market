@@ -1,6 +1,3 @@
-pub mod contract;
-pub mod service;
-
 use linera_sdk::{
     abi::{ContractAbi, ServiceAbi},
     linera_base_types::Amount,
