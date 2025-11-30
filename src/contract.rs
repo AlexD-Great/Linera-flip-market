@@ -1,11 +1,16 @@
 #![cfg_attr(target_arch = "wasm32", no_main)]
 
-use flip_market::{CoinSide, Flip, FlipMarketAbi, FlipMarketState, Operation};
+mod state;
+
+use crate::state::{Flip, FlipMarketState};
+use flip_market::CoinSide;
 use linera_sdk::{
     abi::WithContractAbi,
-    views::linera_views::store::ReadableKeyValueStore,
+    views::{RootView, View},
     Contract, ContractRuntime,
 };
+
+pub use flip_market::FlipMarketAbi;
 
 pub struct FlipMarketContract {
     state: FlipMarketState,
@@ -25,11 +30,9 @@ impl Contract for FlipMarketContract {
     type EventValue = ();
 
     async fn load(runtime: ContractRuntime<Self>) -> Self {
-        let state = runtime.key_value_store()
-            .read_value(b"state")
+        let state = FlipMarketState::load(runtime.root_view_storage_context())
             .await
-            .unwrap_or(None)
-            .unwrap_or_default();
+            .expect("Failed to load state");
         FlipMarketContract { state, runtime }
     }
 
@@ -38,9 +41,11 @@ impl Contract for FlipMarketContract {
     }
 
     async fn execute_operation(&mut self, operation: Self::Operation) -> Self::Response {
+        use flip_market::Operation;
+        
         match operation {
             Operation::CreateFlip { bet_amount } => {
-                let flip_id = self.state.next_flip_id;
+                let flip_id = *self.state.next_flip_id.get();
                 let creator = self
                     .runtime
                     .authenticated_signer()
@@ -56,8 +61,8 @@ impl Contract for FlipMarketContract {
                     winner: None,
                 };
 
-                self.state.flips.insert(flip_id, flip);
-                self.state.next_flip_id = flip_id + 1;
+                self.state.flips.insert(&flip_id, flip).expect("Failed to insert flip");
+                self.state.next_flip_id.set(flip_id + 1);
             }
             Operation::PlaceBet { flip_id, prediction } => {
                 let player = self
@@ -69,15 +74,17 @@ impl Contract for FlipMarketContract {
                     .state
                     .flips
                     .get(&flip_id)
-                    .cloned()
+                    .await
+                    .expect("Failed to get flip")
                     .expect("Flip not found");
 
                 if flip.player1.is_none() {
                     flip.player1 = Some((player.to_string(), prediction));
-                    self.state.flips.insert(flip_id, flip);
+                    self.state.flips.insert(&flip_id, flip).expect("Failed to update flip");
                 } else if flip.player2.is_none() && flip.player1.as_ref().unwrap().0 != player.to_string() {
                     flip.player2 = Some((player.to_string(), prediction));
                     
+                    // Generate random result using timestamp
                     let random = self.runtime.system_time().micros() % 2;
                     flip.result = if random == 0 {
                         Some(CoinSide::Heads)
@@ -85,6 +92,7 @@ impl Contract for FlipMarketContract {
                         Some(CoinSide::Tails)
                     };
 
+                    // Determine winner
                     if flip.player1.as_ref().unwrap().1 == flip.result.unwrap() {
                         flip.winner = Some(flip.player1.as_ref().unwrap().0.clone());
                         self.update_leaderboard(flip.player1.as_ref().unwrap().0.clone()).await;
@@ -93,7 +101,7 @@ impl Contract for FlipMarketContract {
                         self.update_leaderboard(flip.player2.as_ref().unwrap().0.clone()).await;
                     }
 
-                    self.state.flips.insert(flip_id, flip);
+                    self.state.flips.insert(&flip_id, flip).expect("Failed to update flip");
                 }
             }
         }
@@ -103,15 +111,20 @@ impl Contract for FlipMarketContract {
         panic!("Messages not supported");
     }
 
-    async fn store(self) {
-        // TODO: State persistence - insert_key_value method not available in current SDK
-        // May need to use Views-based approach or different persistence method
+    async fn store(mut self) {
+        self.state.save().await.expect("Failed to save state");
     }
 }
 
 impl FlipMarketContract {
     async fn update_leaderboard(&mut self, owner: String) {
-        let current_score = self.state.leaderboard.get(&owner).cloned().unwrap_or(0);
-        self.state.leaderboard.insert(owner, current_score + 1);
+        let current_score = self.state.leaderboard
+            .get(&owner)
+            .await
+            .expect("Failed to get leaderboard score")
+            .unwrap_or(0);
+        self.state.leaderboard
+            .insert(&owner, current_score + 1)
+            .expect("Failed to update leaderboard");
     }
 }

@@ -1,0 +1,23 @@
+========================================
+STEP 5: Build Linera CLI
+========================================
+
+⚠️ WARNING: This step takes 15-30 minutes!
+
+Copy and paste these commands into your Ubuntu terminal:
+
+cd ~/linera-protocol
+cargo build --release -p linera-service
+
+After it completes, add Linera to your PATH:
+
+echo 'export PATH="$HOME/linera-protocol/target/release:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+Verify installation:
+
+linera --version
+
+You should see: linera x.x.x
+
+Time: ~15-30 minutes (be patient!)

@@ -1,162 +1,101 @@
-# ⚡ Linera Flip Market
+# 🎲 Linera Flip Market - Buildathon Submission
 
-> Real-time coin flip betting powered by Linera microchains
+A decentralized coin flip betting game built on Linera Protocol. Players can create flip bets, join existing flips, and compete on a global leaderboard.
 
-[![Linera](https://img.shields.io/badge/Built%20on-Linera-purple)](https://linera.io)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+## 🎯 Project Description
 
-## � Live Demo
+Flip Market is a fully on-chain betting application where users can:
+- Create coin flip bets with custom amounts
+- Join existing flips and predict the outcome (Heads/Tails)
+- View real-time leaderboard of top players
+- All game logic runs on Linera smart contracts with provably fair randomness
 
-**🚀 [View Live Demo](https://linera-flip-market.vercel.app)**
+## 🔗 Links
 
-> Experience the Linera Flip Market in action! The frontend is deployed on Vercel.
+- **GitHub Repository**: https://github.com/AlexD-Great/Linera-flip-market
+- **Frontend Demo**: https://linera-flip-market.vercel.app/
+- **Linera SDK Version**: v0.15.5
 
-## �🎯 Overview
-
-Linera Flip Market is a decentralized coin flip betting platform that leverages Linera's microchain architecture for instant, transparent, and fair betting. Players can create coin flips, place bets, and see results resolved in real-time with zero latency.
-
-## ✨ Features
-
-- **🎲 Instant Coin Flips** - Create and join coin flip bets in seconds
-- **⚡ Real-time Resolution** - Automatic flip resolution when second player joins
-- **🏆 Leaderboard** - Track top players and their win streaks
-- **💰 Transparent Betting** - All bets and results recorded on-chain
-- **🔐 Secure & Fair** - Cryptographically secure randomness
-- **📱 Modern UI** - Beautiful, responsive interface built with Next.js
-
-## 🏗️ Architecture
-
-### Smart Contract (Rust)
-- **State Management** - Tracks all active flips and player stats
-- **Betting Logic** - Handles flip creation, bet placement, and resolution
-- **Leaderboard** - Maintains player rankings and win counts
-- **GraphQL API** - Query flips and leaderboard data
-
-### Frontend (Next.js + TypeScript)
-- **React Components** - Modular, reusable UI components
-- **TailwindCSS** - Modern, responsive styling
-- **Real-time Updates** - Live flip status and leaderboard
-
-## 📸 Screenshots
-
-### Active Flips
-![Active Flips](screenshots/01-active-flips.png)
-
-### Create Flip
-![Create Flip](screenshots/02-create-flip.png)
-
-### Leaderboard
-![Leaderboard](screenshots/03-leaderboard.png)
-
-## 🚀 Quick Start
+## 🚀 Quick Start (Docker)
 
 ### Prerequisites
-- Rust 1.70+
-- Node.js 18+
-- Linera CLI
+- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
+- Docker Compose
 
-### Install Linera CLI
+### Run Locally
+
+1. **Clone the repository**:
 ```bash
-git clone https://github.com/linera-io/linera-protocol.git -b testnet_conway
-cd linera-protocol
-cargo build --release -p linera-service
-export PATH="$PWD/target/release:$PATH"
+git clone https://github.com/AlexD-Great/Linera-flip-market.git
+cd Linera-flip-market
 ```
 
-### Build Smart Contract
+2. **Start the application**:
 ```bash
-cd linera-flip-market
-cargo build --release --target wasm32-unknown-unknown
+docker compose up
 ```
 
-### Deploy to Testnet
-```bash
-linera project publish-and-create
+3. **Access the GraphQL API**:
+   - The application will deploy automatically
+   - Check the logs for your Chain ID and Application ID
+   - Access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}`
+
+### Example GraphQL Queries
+
+**Query all flips**:
+```graphql
+{
+  flips {
+    id
+    creator
+    betAmount
+    status
+    result
+    winner
+  }
+}
 ```
 
-### Run Frontend
-```bash
-cd web
-npm install
-npm run dev
+**Create a new flip**:
+```graphql
+mutation {
+  createFlip(betAmount: "1000000")
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
-
-## 🎮 How to Play
-
-1. **Create a Flip** - Set your bet amount and create a new flip
-2. **Choose Side** - Pick Heads or Tails
-3. **Wait for Opponent** - Another player joins and picks the opposite side
-4. **Instant Resolution** - Flip resolves automatically, winner takes all!
-5. **Climb Leaderboard** - Win more flips to reach the top
-
-## 🛠️ Tech Stack
-
-- **Blockchain**: Linera Protocol
-- **Smart Contract**: Rust
-- **Frontend**: Next.js 16, React, TypeScript
-- **Styling**: TailwindCSS
-- **GraphQL**: Async-GraphQL
-
-## 📁 Project Structure
-
-```
-linera-flip-market/
-├── src/
-│   ├── lib.rs          # Core types and state
-│   ├── contract.rs     # Smart contract logic
-│   └── service.rs      # GraphQL API service
-├── web/
-│   ├── app/
-│   │   └── page.tsx    # Main page
-│   └── components/
-│       ├── FlipCard.tsx
-│       ├── CreateFlip.tsx
-│       └── Leaderboard.tsx
-├── screenshots/        # UI screenshots
-├── Cargo.toml         # Rust dependencies
-└── README.md
+**Place a bet**:
+```graphql
+mutation {
+  placeBet(flipId: 0, prediction: HEADS)
+}
 ```
 
-## 🎯 Linera Buildathon Wave 1
+## 📦 Structure
 
-This project is submitted for the Linera Buildathon Wave 1 (October 20th - November 20th, 2025).
+- **Port 8080**: Linera faucet
+- **Port 8081**: GraphQL service for the application
+- **Port 9001**: Localnet validator's gRPC server
+- **Port 13001**: Localnet validator proxy
 
-📅 **[View Buildathon Roadmap](ROADMAP.md)** - Detailed timeline and milestones
+## 🛠️ Linera Features Used
 
-### Why Linera?
+- **Linera SDK v0.15.5**: Core smart contract framework
+- **Linera Views**: Persistent state management (MapView for flips and leaderboard)
+- **GraphQL Service**: Query and mutation API for the application
+- **Linera Operations**: CreateFlip and PlaceBet operations
+- **Cross-chain messaging**: Ready for multi-chain deployment
 
-- **Microchains** - Each flip can run on its own chain for maximum parallelism
-- **Instant Finality** - No waiting for block confirmations
-- **Low Latency** - Perfect for real-time betting applications
-- **Scalability** - Handle thousands of concurrent flips
+## 👥 Team
 
-### Future Enhancements (Wave 2)
+- **Name**: Alex D Great
+- **Discord**: @alexdgreat
+- **Wallet**: TBD
 
-- 🎰 Multi-player tournaments
-- 💎 NFT rewards for top players
-- 🤖 AI opponent mode
-- 📊 Advanced analytics dashboard
-- 🌐 Cross-chain betting
+## 📝 Changelog
 
-## 📝 License
-
-MIT License - see [LICENSE](LICENSE) file
-
-## 🤝 Contributing
-
-Contributions welcome! Please open an issue or PR.
-
-## 📧 Contact
-
-**Developer**: Adam
-- GitHub: [@AlexD-Great](https://github.com/AlexD-Great)
-- Twitter: [@Adam_shelbie](https://twitter.com/Adam_shelbie)
-- Email: muhammedadam305@gmail.com
-
-Built with ❤️ for the Linera Buildathon
-
----
-
-**⚡ Powered by Linera Microchains**
+### Wave 1 Submission
+- ✅ Implemented core flip creation and betting logic
+- ✅ Added leaderboard tracking system
+- ✅ GraphQL API with queries and mutations
+- ✅ Dockerized deployment using buildathon template
+- ✅ Local network testing complete

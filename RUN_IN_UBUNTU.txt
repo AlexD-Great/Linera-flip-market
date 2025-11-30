@@ -1,0 +1,10 @@
+# Copy and paste these commands into your Ubuntu terminal
+
+# Navigate to your project
+cd /mnt/c/Users/shelby/Desktop/Linera-flip-market
+
+# Make the script executable
+chmod +x AFTER_WSL_INSTALL.sh
+
+# Run the installation script
+./AFTER_WSL_INSTALL.sh

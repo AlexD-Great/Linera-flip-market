@@ -1,0 +1,15 @@
+========================================
+STEP 4: Clone Linera Protocol
+========================================
+
+Copy and paste these commands into your Ubuntu terminal:
+
+cd ~
+git clone https://github.com/linera-io/linera-protocol.git -b testnet_conway
+
+This will:
+- Navigate to your home directory
+- Clone the Linera protocol repository
+- Use the testnet_conway branch
+
+Time: ~2-3 minutes

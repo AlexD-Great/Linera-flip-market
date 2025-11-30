@@ -1,0 +1,75 @@
+================================================================================
+LINERA CLI INSTALLATION ERRORS - testnet_conway Branch
+================================================================================
+
+ENVIRONMENT:
+- OS: Windows 10 with WSL2 (Ubuntu)
+- Rust: 1.91.1 (stable-x86_64-unknown-linux-gnu)
+- Cargo: 1.91.1
+- Target: wasm32-unknown-unknown (installed)
+- Branch: testnet_conway
+- RAM: 3.8GB available in WSL2
+
+================================================================================
+ERROR 1: cargo install with --bin linera flag
+================================================================================
+
+Command:
+$ cargo install --git https://github.com/linera-io/linera-protocol.git --branch testnet_conway --bin linera
+
+Error Output:
+    Updating git repository `https://github.com/linera-io/linera-protocol.git`
+error: multiple packages with binaries found: agent, amm, call-evm-counter, check_copyright_header, contract-call, counter, counter-no-graphql, create-and-call, crowd-funding, ethereum-tracker, fungible, gen-nft, gol-challenge, hex-game, how-to-perform-http-requests, linera-execution, linera-indexer-example, linera-service, linera-storage-service, linera-summary, linera-version, linera-witty-test-modules, llm, matching-engine, meta-counter, native-fungible, non-fungible, publish-read-data-blob, rfq, social, time-expiry, track-instantiation. When installing a git repository, cargo will always search the entire repo for any Cargo.toml.
+Please specify a package, e.g. `cargo install --git https://github.com/linera-io/linera-protocol.git agent`.
+
+================================================================================
+ERROR 2: cargo install linera-service with --locked
+================================================================================
+
+Command:
+$ cargo install --git https://github.com/linera-io/linera-protocol.git --branch testnet_conway linera-service --locked
+
+Error Output:
+    Updating git repository `https://github.com/linera-io/linera-protocol.git`
+error: package `/home/shelby/.cargo/git/checkouts/linera-protocol-384901a671b95416/2c53e8f/linera-sdk/tests/fixtures/meta-counter/Cargo.toml` is a member of the wrong workspace
+expected: /home/shelby/.cargo/git/checkouts/linera-protocol-384901a671b95416/2c53e8f/Cargo.toml
+actual:   /home/shelby/.cargo/git/checkouts/linera-protocol-384901a671b95416/2c53e8f/linera-sdk/tests/fixtures/Cargo.toml
+
+================================================================================
+ERROR 3: Building from cloned repository
+================================================================================
+
+Commands:
+$ cd ~
+$ git clone https://github.com/linera-io/linera-protocol.git -b testnet_conway
+$ cd linera-protocol
+$ cargo build --release --bin linera
+
+Issue:
+Build starts successfully, compiles hundreds of crates, but crashes/hangs at the final linking stage for the linera binary. This appears to be due to WSL2 memory constraints (3.8GB RAM, linking large binaries requires significant memory).
+
+The build gets to:
+    Building [=======================> ] 889/890: linera(bin)
+
+Then either:
+- Hangs indefinitely (no progress for 40+ minutes)
+- WSL2 crashes/closes unexpectedly
+
+================================================================================
+ADDITIONAL CONTEXT
+================================================================================
+
+What Works:
+- Successfully built application WASM binaries using the same testnet_conway SDK
+- cargo build --release --target wasm32-unknown-unknown completes successfully
+- Generated flip_market_contract.wasm (218KB) and flip_market_service.wasm (2.0MB)
+- All code compiles without errors against testnet_conway branch dependencies
+
+What's Needed:
+- Working linera CLI binary to deploy to testnet Conway
+- Commands needed: linera project publish-and-create, linera service
+
+Question:
+Is there a recommended way to install the linera CLI for testnet_conway on Windows/WSL2, or are pre-built binaries available for this branch?
+
+================================================================================

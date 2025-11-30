@@ -1,3 +1,4 @@
+use flip_market::CoinSide;
 use linera_sdk::{
     linera_base_types::Amount,
     views::{linera_views, MapView, RegisterView, RootView, ViewStorageContext},
@@ -16,11 +17,10 @@ pub struct Flip {
     pub winner: Option<String>,
 }
 
-/// Coin side enum
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]
-pub enum CoinSide {
-    Heads,
-    Tails,
+impl Flip {
+    pub fn bet_amount_str(&self) -> String {
+        self.bet_amount.to_string()
+    }
 }
 
 /// The application state using Linera Views

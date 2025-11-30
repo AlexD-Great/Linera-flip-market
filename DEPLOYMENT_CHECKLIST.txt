@@ -1,0 +1,45 @@
+========================================
+LINERA FLIP MARKET - DEPLOYMENT CHECKLIST
+========================================
+
+Run these steps IN YOUR UBUNTU TERMINAL one by one.
+After each step completes, check it off and move to the next.
+
+✅ Step 1: Install Rust - COMPLETE
+   rustc 1.91.1 ✓
+   cargo 1.91.1 ✓
+
+✅ Step 2: Add wasm32 Target - COMPLETE
+   wasm32-unknown-unknown ✓
+
+⏳ Step 3: Install Build Dependencies
+   File: STEP_3_INSTALL_DEPS.txt
+   Command: sudo apt update && sudo apt install -y build-essential pkg-config libssl-dev protobuf-compiler clang
+   Time: 2-5 minutes
+
+⏳ Step 4: Clone Linera Protocol
+   File: STEP_4_CLONE_LINERA.txt
+   Commands: cd ~ && git clone https://github.com/linera-io/linera-protocol.git -b testnet_conway
+   Time: 2-3 minutes
+
+⏳ Step 5: Build Linera CLI (LONGEST STEP!)
+   File: STEP_5_BUILD_LINERA.txt
+   Commands: cd ~/linera-protocol && cargo build --release -p linera-service
+   Time: 15-30 minutes ⚠️
+
+⏳ Step 6: Build WASM Binaries
+   File: STEP_6_BUILD_DEPLOY.txt
+   Commands: cd /mnt/c/Users/shelby/Desktop/Linera-flip-market && cargo build --release --target wasm32-unknown-unknown
+   Time: 5-10 minutes
+
+⏳ Step 7: Deploy to Testnet
+   File: STEP_6_BUILD_DEPLOY.txt
+   Commands: linera project publish-and-create .
+   Time: 2-5 minutes
+
+========================================
+TOTAL TIME: 30-60 minutes
+========================================
+
+CURRENT STATUS: Ready for Step 3
+NEXT ACTION: Open STEP_3_INSTALL_DEPS.txt and run the command in Ubuntu terminal
