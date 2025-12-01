@@ -40,6 +40,24 @@ docker compose up
    - Check the logs for your Chain ID and Application ID
    - Access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}`
 
+## 📸 Screenshots
+
+### Docker Deployment Success
+![Docker Deployment](screenshots/docker-deployment-success.png)
+*Successful deployment showing application ID and GraphQL endpoint*
+
+### GraphiQL Interface
+![GraphiQL Interface](screenshots/graphiql-interface.png)
+*Interactive GraphQL playground for testing queries and mutations*
+
+### Query Flips
+![Query Flips](screenshots/query-flips.png)
+*Querying all flips in the market*
+
+### Create Flip Mutation
+![Create Flip](screenshots/create-flip-mutation.png)
+*Creating a new flip with a bet amount*
+
 ### Example GraphQL Queries
 
 **Query all flips**:
