@@ -106,12 +106,12 @@ mutation {
 ## 👥 Team
 
 - **Name**: Alex D Great
-- **Discord**: @alexdgreat
-- **Wallet**: TBD
+- **Discord**: @jessy0614
+- **Wallet**: 0x774A693E52e6882b10f739bB7b84b3F4438ADb4B
 
 ## 📝 Changelog
 
-### Wave 1 Submission
+### Wave 3 Submission
 - ✅ Implemented core flip creation and betting logic
 - ✅ Added leaderboard tracking system
 - ✅ GraphQL API with queries and mutations
