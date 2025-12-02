@@ -16,7 +16,9 @@ Flip Market is a fully on-chain betting application where users can:
 - **Frontend Demo**: https://linera-flip-market.vercel.app/
 - **Linera SDK Version**: testnet_conway branch (v0.15.6)
 - **Devnet Deployment**: ✅ Successfully deployed and tested
-- **Testnet Status**: Attempted (network congestion prevented deployment)
+- **Testnet Conway Deployment**: ✅ **LIVE ON TESTNET!**
+- **Testnet Application ID**: `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`
+- **Testnet Chain ID**: `9a58e5e2d5cc82891cd0bfebcc311b309716d357d979a8cb9892b3bfb8f18fc0`
 
 ## 🚀 Quick Start (Docker)
 
@@ -121,4 +123,5 @@ mutation {
 - ✅ Local network testing complete
 - ✅ **Devnet deployment successful** (Application ID: `4771f024a6337d4363ed10ae9140963eb6387324191c930d53d5ac2ac36750c3`)
 - ✅ Upgraded to testnet_conway SDK branch with Rust 1.86.0
-- ⏳ Testnet Conway deployment attempted (network timeout due to validator congestion)
+- ✅ **🎉 TESTNET CONWAY DEPLOYMENT SUCCESSFUL!** (Application ID: `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`)
+- ✅ Live GraphQL service running on testnet with verified functionality
