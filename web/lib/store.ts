@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import toast from 'react-hot-toast';
 import { Flip, LeaderboardEntry, CoinSide } from './types';
-import { mockApi } from './mockApi';
+import { lineraApi } from './lineraApi';
 
 interface FlipMarketStore {
   flips: Flip[];
@@ -30,7 +30,7 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
   fetchFlips: async () => {
     set({ isLoading: true, error: null });
     try {
-      const flips = await mockApi.getFlips();
+      const flips = await lineraApi.getFlips();
       set({ flips, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to fetch flips', isLoading: false });
@@ -40,7 +40,7 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
   fetchLeaderboard: async () => {
     set({ isLoading: true, error: null });
     try {
-      const leaderboard = await mockApi.getLeaderboard();
+      const leaderboard = await lineraApi.getLeaderboard();
       set({ leaderboard, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to fetch leaderboard', isLoading: false });
@@ -57,7 +57,7 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
     set({ isLoading: true, error: null });
     const loadingToast = toast.loading('Creating flip...');
     try {
-      const newFlip = await mockApi.createFlip(betAmount, currentUser);
+      const newFlip = await lineraApi.createFlip(betAmount, currentUser);
       set(state => ({
         flips: [...state.flips, newFlip],
         isLoading: false,
@@ -79,7 +79,7 @@ export const useFlipMarketStore = create<FlipMarketStore>((set, get) => ({
     set({ isLoading: true, error: null });
     const loadingToast = toast.loading(`Betting on ${prediction}...`);
     try {
-      const updatedFlip = await mockApi.placeBet(flipId, currentUser, prediction);
+      const updatedFlip = await lineraApi.placeBet(flipId, currentUser, prediction);
       set(state => ({
         flips: state.flips.map(f => f.id === flipId ? updatedFlip : f),
         isLoading: false,
