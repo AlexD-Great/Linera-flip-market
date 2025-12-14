@@ -2,7 +2,7 @@
 
 mod state;
 
-use crate::state::{Flip, FlipMarketState};
+use crate::state::{Bet, Flip, FlipMarketState, FlipStatus, PlayerStats};
 use flip_market::CoinSide;
 use linera_sdk::{
     abi::WithContractAbi,
@@ -55,10 +55,12 @@ impl Contract for FlipMarketContract {
                     id: flip_id,
                     creator: creator.to_string(),
                     bet_amount,
-                    player1: None,
-                    player2: None,
+                    bets: Vec::new(),
                     result: None,
                     winner: None,
+                    status: FlipStatus::Open,
+                    created_at: self.runtime.system_time(),
+                    completed_at: None,
                 };
 
                 self.state.flips.insert(&flip_id, flip).expect("Failed to insert flip");
@@ -78,11 +80,26 @@ impl Contract for FlipMarketContract {
                     .expect("Failed to get flip")
                     .expect("Flip not found");
 
-                if flip.player1.is_none() {
-                    flip.player1 = Some((player.to_string(), prediction));
-                    self.state.flips.insert(&flip_id, flip).expect("Failed to update flip");
-                } else if flip.player2.is_none() && flip.player1.as_ref().unwrap().0 != player.to_string() {
-                    flip.player2 = Some((player.to_string(), prediction));
+                // Check if flip is still open or active
+                if flip.status == FlipStatus::Completed {
+                    return; // Cannot bet on completed flip
+                }
+
+                // Add the bet
+                let bet = Bet {
+                    player: player.to_string(),
+                    prediction,
+                    timestamp: self.runtime.system_time(),
+                };
+                flip.bets.push(bet);
+
+                // Update flip status
+                if flip.bets.len() == 1 {
+                    flip.status = FlipStatus::Active;
+                } else if flip.bets.len() >= 2 {
+                    // Complete the flip when second bet is placed
+                    flip.status = FlipStatus::Completed;
+                    flip.completed_at = Some(self.runtime.system_time());
                     
                     // Generate random result using timestamp
                     let random = self.runtime.system_time().micros() % 2;
@@ -92,17 +109,22 @@ impl Contract for FlipMarketContract {
                         Some(CoinSide::Tails)
                     };
 
-                    // Determine winner
-                    if flip.player1.as_ref().unwrap().1 == flip.result.unwrap() {
-                        flip.winner = Some(flip.player1.as_ref().unwrap().0.clone());
-                        self.update_leaderboard(flip.player1.as_ref().unwrap().0.clone()).await;
-                    } else {
-                        flip.winner = Some(flip.player2.as_ref().unwrap().0.clone());
-                        self.update_leaderboard(flip.player2.as_ref().unwrap().0.clone()).await;
+                    // Determine winner and update stats for all participants
+                    let result = flip.result.unwrap();
+                    for bet in &flip.bets {
+                        let is_winner = bet.prediction == result;
+                        self.update_player_stats(&bet.player, is_winner, flip.bet_amount).await;
+                        
+                        if is_winner && flip.winner.is_none() {
+                            flip.winner = Some(bet.player.clone());
+                        }
                     }
-
-                    self.state.flips.insert(&flip_id, flip).expect("Failed to update flip");
                 }
+
+                // Update bet history
+                self.add_to_player_history(player.to_string(), flip_id).await;
+                
+                self.state.flips.insert(&flip_id, flip).expect("Failed to update flip");
             }
         }
     }
@@ -117,14 +139,43 @@ impl Contract for FlipMarketContract {
 }
 
 impl FlipMarketContract {
-    async fn update_leaderboard(&mut self, owner: String) {
-        let current_score = self.state.leaderboard
-            .get(&owner)
+    /// Update player statistics after a game
+    async fn update_player_stats(&mut self, player: &str, won: bool, bet_amount: linera_sdk::linera_base_types::Amount) {
+        use linera_sdk::linera_base_types::Amount;
+        
+        let mut stats = self.state.player_stats
+            .get(player)
             .await
-            .expect("Failed to get leaderboard score")
-            .unwrap_or(0);
-        self.state.leaderboard
-            .insert(&owner, current_score + 1)
-            .expect("Failed to update leaderboard");
+            .expect("Failed to get player stats")
+            .unwrap_or_default();
+        
+        stats.total_games += 1;
+        if won {
+            stats.wins += 1;
+            stats.total_won = stats.total_won.saturating_add(bet_amount.saturating_mul(2));
+        } else {
+            stats.losses += 1;
+        }
+        stats.total_wagered = stats.total_wagered.saturating_add(bet_amount);
+        
+        self.state.player_stats
+            .insert(player, stats)
+            .expect("Failed to update player stats");
+    }
+
+    /// Add flip to player's bet history
+    async fn add_to_player_history(&mut self, player: String, flip_id: u64) {
+        let mut history = self.state.player_history
+            .get(&player)
+            .await
+            .expect("Failed to get player history")
+            .unwrap_or_default();
+        
+        if !history.contains(&flip_id) {
+            history.push(flip_id);
+            self.state.player_history
+                .insert(&player, history)
+                .expect("Failed to update player history");
+        }
     }
 }
