@@ -1,6 +1,8 @@
-# 🎲 Linera Flip Market - Buildathon Submission
+# 🎲 Linera Flip Market - Wave 4 Submission
 
 A decentralized coin flip betting game built on Linera Protocol. Players can create flip bets, join existing flips, and compete on a global leaderboard.
+
+> **Wave 4 Focus**: Enhanced features, clean codebase, and production-ready deployment using the official Linera buildathon template.
 
 ## 🎯 Project Description
 
@@ -121,13 +123,19 @@ mutation {
 
 ## 📝 Changelog
 
+### Wave 4 Submission (Current)
+- ✅ Fixed compilation issues (removed problematic build.rs)
+- ✅ Cleaned repository structure (archived Wave 1-3 materials)
+- ✅ Enhanced judge experience with JUDGES_QUICK_START.md
+- ✅ Verified one-command Docker setup works flawlessly
+- 🚧 Adding new features (in progress)
+
 ### Wave 3 Submission
 - ✅ Implemented core flip creation and betting logic
 - ✅ Added leaderboard tracking system
 - ✅ GraphQL API with queries and mutations
 - ✅ Dockerized deployment using buildathon template
-- ✅ Local network testing complete
-- ✅ **Devnet deployment successful** (Application ID: `4771f024a6337d4363ed10ae9140963eb6387324191c930d53d5ac2ac36750c3`)
-- ✅ Upgraded to testnet_conway SDK branch with Rust 1.86.0
-- ✅ **🎉 TESTNET CONWAY DEPLOYMENT SUCCESSFUL!** (Application ID: `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`)
-- ✅ Live GraphQL service running on testnet with verified functionality
+- ✅ **Testnet Conway deployment successful** (Application ID: `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`)
+
+### Previous Waves
+See `/archive/wave-1-3/` for detailed history and materials from earlier submissions.
