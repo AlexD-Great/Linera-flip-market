@@ -1,8 +1,10 @@
 # 🎯 Quick Start Guide for Judges
 
-## ⚡ One-Command Setup
+## ⚡ One-Command Setup (Docker Only)
 
-This project uses the **official [Linera Buildathon Template](https://github.com/linera-io/buildathon-template)**.
+This project uses the **official [Linera Buildathon Template](https://github.com/linera-io/buildathon-template)** for guaranteed reproducibility.
+
+**🎯 RECOMMENDED TESTING METHOD: Docker Compose**
 
 ### Requirements
 - Docker Desktop or Docker Engine
@@ -16,7 +18,9 @@ cd Linera-flip-market
 docker compose up
 ```
 
-**That's it!** No manual setup required.
+**That's it!** No manual setup required. Build time: ~5 minutes.
+
+> **Note:** This is the primary and recommended method for evaluating this project. All features are fully functional via Docker.
 
 ## 📊 What Happens
 
@@ -44,18 +48,49 @@ Access GraphiQL at:
 http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}
 ```
 
-## 🧪 Test Queries
+## 🧪 Test Queries (Wave 4 Features)
 
-### Query all flips
+### Query all flips with bet details
 ```graphql
-{
+query {
   flips {
     id
     creator
     betAmount
     status
+    totalBets
+    bets {
+      player
+      prediction
+      timestamp
+    }
     result
     winner
+  }
+}
+```
+
+### Query active flips only
+```graphql
+query {
+  activeFlips {
+    id
+    status
+    totalBets
+  }
+}
+```
+
+### View enhanced leaderboard
+```graphql
+query {
+  leaderboard {
+    player
+    wins
+    losses
+    totalGames
+    winRate
+    totalWon
   }
 }
 ```
@@ -67,13 +102,10 @@ mutation {
 }
 ```
 
-### View leaderboard
+### Place a bet
 ```graphql
-{
-  leaderboard {
-    player
-    wins
-  }
+mutation {
+  placeBet(flipId: 0, prediction: Heads)
 }
 ```
 
@@ -87,13 +119,14 @@ mutation {
 
 ## 🔗 Additional Resources
 
-- **GitHub**: https://github.com/AlexD-Great/Linera-flip-market
-- **Testnet Deployment**: Application ID `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`
-- **Frontend Demo**: https://linera-flip-market.vercel.app/
+- **GitHub Repository**: https://github.com/AlexD-Great/Linera-flip-market
+- **Wave 4 Features Documentation**: See `WAVE4_FEATURES.md` for detailed feature descriptions
+- **Previous Testnet Deployment** (Wave 3): Application ID `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`
 
-## 💡 Notes
+## 💡 Technical Notes
 
-- The application communicates with the Linera network via GraphQL
-- All game logic runs on-chain in the smart contract
-- Leaderboard and flip state are persisted using Linera Views
-- Random number generation uses on-chain randomness for fairness
+- ✅ **Smart Contract**: Rust-based contract deployed on Linera blockchain
+- ✅ **State Management**: Persistent storage using Linera Views (MapView, RegisterView)
+- ✅ **GraphQL API**: Service layer exposes blockchain data via GraphQL queries
+- ✅ **On-Chain Logic**: All game logic (flip creation, betting, winner determination) runs on-chain
+- ✅ **Wave 4 Features**: Multi-bet support, bet history, player statistics, enhanced leaderboard
