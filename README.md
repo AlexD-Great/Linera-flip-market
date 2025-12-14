@@ -64,23 +64,43 @@ Then access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{
 ![Build Success](screenshots/wave4-docker-build-success.png)
 *Docker build completed successfully using official Linera buildathon template*
 
-## 📸 Screenshots
+## 📸 Screenshots - Wave 4 Features in Action
 
 ### Docker Deployment Success
-![Docker Deployment](screenshots/docker-deployment-success.png)
-*Successful deployment showing application ID and GraphQL endpoint*
+![Docker Deployment](screenshots/wave4-docker-build-success.png)
+*Successful deployment showing application ID and GraphQL endpoint (Build time: 4m 46s)*
 
 ### GraphiQL Interface
 ![GraphiQL Interface](screenshots/graphiql-interface.png)
 *Interactive GraphQL playground for testing queries and mutations*
 
-### Query Flips
-![Query Flips](screenshots/query-flips.png)
-*Querying all flips in the market*
+### Wave 4 Feature: Multi-Bet Support
+![Query Flips Wave 4](screenshots/query-flips-wave4.png)
+*Flips showing multiple bets with player details, predictions, and timestamps - demonstrates multi-bet support*
+
+### Wave 4 Feature: Active Flips Dashboard
+![Active Flips](screenshots/active-flips-query.png)
+*Filtered view showing only open and active flips - helps players find games to join*
+
+### Wave 4 Feature: Enhanced Leaderboard
+![Enhanced Leaderboard](screenshots/enhanced-leaderboard.png)
+*Comprehensive leaderboard with wins, losses, total games, win rate percentage, and total winnings*
+
+### Wave 4 Feature: Player Statistics
+![Player Stats](screenshots/player-stats.png)
+*Detailed player statistics including games played, wins, losses, win rate, total wagered, and total won*
+
+### Wave 4 Feature: Player History
+![Player History](screenshots/player-history.png)
+*Complete betting history showing all flips a player participated in*
 
 ### Create Flip Mutation
 ![Create Flip](screenshots/create-flip-mutation.png)
 *Creating a new flip with a bet amount*
+
+### Place Bet Mutation
+![Place Bet](screenshots/place-bet-mutation.png)
+*Placing a bet on an existing flip*
 
 ## 🎯 Wave 4 Features
 
