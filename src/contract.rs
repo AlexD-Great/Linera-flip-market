@@ -141,7 +141,6 @@ impl Contract for FlipMarketContract {
 impl FlipMarketContract {
     /// Update player statistics after a game
     async fn update_player_stats(&mut self, player: &str, won: bool, bet_amount: linera_sdk::linera_base_types::Amount) {
-        use linera_sdk::linera_base_types::Amount;
         
         let mut stats = self.state.player_stats
             .get(player)

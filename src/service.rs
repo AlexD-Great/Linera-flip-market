@@ -3,11 +3,11 @@
 mod state;
 
 use async_graphql::{EmptySubscription, Object, Request, Response, Schema};
-use crate::state::{Bet, Flip, FlipMarketState, FlipStatus, PlayerStats};
+use crate::state::{FlipMarketState, FlipStatus};
 use flip_market::CoinSide;
 use linera_sdk::{
     abi::WithServiceAbi,
-    views::{View, ViewStorageContext},
+    views::View,
     Service, ServiceRuntime,
 };
 use std::sync::Arc;
@@ -97,10 +97,41 @@ impl QueryRoot {
 
     /// Get active (open or in-progress) flips
     async fn active_flips(&self) -> Vec<FlipInfo> {
-        let all_flips = self.flips().await;
-        all_flips.into_iter()
-            .filter(|f| f.status == "Open" || f.status == "Active")
-            .collect()
+        let mut result = Vec::new();
+        let indices: Vec<u64> = self.state
+            .flips
+            .indices()
+            .await
+            .expect("Failed to get flip indices")
+            .into_iter()
+            .collect();
+        
+        for id in indices {
+            if let Some(flip) = self.state.flips.get(&id).await.expect("Failed to get flip") {
+                // Only include Open or Active flips
+                if flip.status == FlipStatus::Open || flip.status == FlipStatus::Active {
+                    result.push(FlipInfo {
+                        id,
+                        creator: flip.creator.clone(),
+                        bet_amount: flip.bet_amount.to_string(),
+                        status: match flip.status {
+                            FlipStatus::Open => "Open".to_string(),
+                            FlipStatus::Active => "Active".to_string(),
+                            FlipStatus::Completed => "Completed".to_string(),
+                        },
+                        result: flip.result.map(|r| format!("{:?}", r)),
+                        winner: flip.winner.clone(),
+                        total_bets: flip.bets.len() as u64,
+                        bets: flip.bets.iter().map(|b| BetInfo {
+                            player: b.player.clone(),
+                            prediction: format!("{:?}", b.prediction),
+                            timestamp: b.timestamp.micros(),
+                        }).collect(),
+                    });
+                }
+            }
+        }
+        result
     }
 
     /// Get player's bet history
