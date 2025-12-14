@@ -1,0 +1,56 @@
+📸 WAVE 4 SCREENSHOT CHECKLIST
+================================
+
+PRIORITY SCREENSHOTS TO CAPTURE:
+
+[ ] 1. Query Flips with Wave 4 Features (CRITICAL)
+    File: screenshots/query-flips-wave4.png
+    Shows: totalBets, bets array with player/prediction/timestamp
+    
+[ ] 2. Enhanced Leaderboard (CRITICAL)
+    File: screenshots/enhanced-leaderboard.png
+    Shows: wins, losses, totalGames, winRate, totalWon
+    
+[ ] 3. Active Flips Query (CRITICAL)
+    File: screenshots/active-flips-query.png
+    Shows: Filtered list of open/active flips only
+    
+[ ] 4. Create Flip Mutation (IMPORTANT)
+    File: screenshots/create-flip-mutation.png
+    Shows: Mutation execution and response
+    
+[ ] 5. Place Bet Mutation (IMPORTANT)
+    File: screenshots/place-bet-mutation.png
+    Shows: Betting on a flip
+    
+[ ] 6. Player Statistics (IMPORTANT)
+    File: screenshots/player-stats.png
+    Shows: Individual player comprehensive stats
+    
+[ ] 7. Player History (NICE TO HAVE)
+    File: screenshots/player-history.png
+    Shows: All flips a player participated in
+    
+[ ] 8. GraphiQL Interface (NICE TO HAVE)
+    File: screenshots/graphiql-interface.png
+    Shows: The testing environment
+
+ALREADY HAVE:
+[✓] Docker Build Success
+    File: screenshots/wave4-docker-build-success.png
+
+QUICK STEPS:
+1. Make sure Docker is running (docker compose up)
+2. Open http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}
+3. Create 2-3 test flips
+4. Place some bets
+5. Take screenshots following SCREENSHOTS_GUIDE.md
+6. Save in /screenshots folder
+7. Update README.md with screenshot references
+
+REMEMBER:
+- Use "query" keyword in all queries
+- Use "mutation" keyword in all mutations
+- Capture both query and response
+- High resolution, clear text
+- Show Wave 4 features prominently
