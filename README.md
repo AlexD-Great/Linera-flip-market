@@ -20,29 +20,35 @@ Flip Market is a fully on-chain betting application where users can:
 - **Testnet Application ID**: `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`
 - **Testnet Chain ID**: `9a58e5e2d5cc82891cd0bfebcc311b309716d357d979a8cb9892b3bfb8f18fc0`
 
-## 🚀 Quick Start (Docker)
+## 🚀 Quick Start (Docker) - FOR JUDGES
 
-### Prerequisites
-- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
-- Docker Compose
+**⚠️ IMPORTANT: This project uses the official [Linera Buildathon Template](https://github.com/linera-io/buildathon-template)**
 
-### Run Locally
+### One-Command Setup
 
-1. **Clone the repository**:
 ```bash
 git clone https://github.com/AlexD-Great/Linera-flip-market.git
 cd Linera-flip-market
-```
-
-2. **Start the application**:
-```bash
 docker compose up
 ```
 
-3. **Access the GraphQL API**:
-   - The application will deploy automatically
-   - Check the logs for your Chain ID and Application ID
-   - Access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}`
+That's it! The application will:
+1. ✅ Build the Linera contract automatically
+2. ✅ Deploy to a local Linera network
+3. ✅ Start the GraphQL service on `http://localhost:8081`
+4. ✅ Display the Chain ID and Application ID in logs
+
+### Access the Application
+
+Once running, check the Docker logs for output like:
+```
+✅ Flip Market deployed successfully!
+📊 GraphQL endpoint: http://localhost:8081
+```
+
+Then access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}`
+
+(Chain ID and Application ID will be shown in the logs)
 
 ## 📸 Screenshots
 
