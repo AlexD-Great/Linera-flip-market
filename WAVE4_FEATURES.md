@@ -271,7 +271,7 @@ mutation {
 #### 2. Place a Bet
 ```graphql
 mutation {
-  placeBet(flipId: 0, prediction: Heads)
+  placeBet(flipId: 0, prediction: HEADS)
 }
 ```
 

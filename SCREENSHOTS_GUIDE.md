@@ -1,5 +1,135 @@
 # 📸 Screenshots Guide for Wave 4 Submission
 
+## 🔗 Quick Access Link
+
+**Click here to open GraphiQL:**
+```
+http://localhost:8081/chains/d5a223aba479082e5361030d6bb99a63899d2c3417f386e5f7c332a20f8688c7/applications/2a7fbcefff7b8306025ba9609a0870adae4a741c303d5276bd303196aa558c81
+```
+
+---
+
+## 📋 QUICK COPY-PASTE QUERIES
+
+Copy each query below, paste in GraphiQL, run, and screenshot!
+
+### Query 1: Create First Flip
+```graphql
+mutation {
+  createFlip(betAmount: "1000000")
+}
+```
+
+### Query 2: Create Second Flip
+```graphql
+mutation {
+  createFlip(betAmount: "2000000")
+}
+```
+
+### Query 3: Create Third Flip
+```graphql
+mutation {
+  createFlip(betAmount: "500000")
+}
+```
+
+### Query 4: Place First Bet (on flip 0)
+```graphql
+mutation {
+  placeBet(flipId: 0, prediction: HEADS)
+}
+```
+
+### Query 5: Place Second Bet (on flip 0 - completes it)
+```graphql
+mutation {
+  placeBet(flipId: 0, prediction: TAILS)
+}
+```
+
+### Query 6: Place Bet on Flip 1
+```graphql
+mutation {
+  placeBet(flipId: 1, prediction: HEADS)
+}
+```
+
+### Query 7: Query All Flips (Wave 4 Features)
+```graphql
+query {
+  flips {
+    id
+    creator
+    betAmount
+    status
+    totalBets
+    bets {
+      player
+      prediction
+      timestamp
+    }
+    result
+    winner
+  }
+}
+```
+
+### Query 8: Active Flips Only
+```graphql
+query {
+  activeFlips {
+    id
+    status
+    totalBets
+  }
+}
+```
+
+### Query 9: Enhanced Leaderboard
+```graphql
+query {
+  leaderboard {
+    player
+    wins
+    losses
+    totalGames
+    winRate
+    totalWon
+  }
+}
+```
+
+### Query 10: Player Statistics (replace with your address from Query 7)
+```graphql
+query {
+  playerStats(player: "PASTE_YOUR_ADDRESS_HERE") {
+    player
+    totalGames
+    wins
+    losses
+    winRate
+    totalWagered
+    totalWon
+  }
+}
+```
+
+### Query 11: Player History (replace with your address from Query 7)
+```graphql
+query {
+  playerHistory(player: "PASTE_YOUR_ADDRESS_HERE") {
+    id
+    status
+    result
+    winner
+    totalBets
+  }
+}
+```
+
+---
+
 ## Required Screenshots for Documentation
 
 ### 1. Docker Build Success ✅
@@ -18,7 +148,7 @@
 **File:** `screenshots/graphiql-interface.png`
 
 **How to capture:**
-1. Open `http://localhost:8081/chains/{CHAIN_ID}/applications/{APP_ID}`
+1. Open the link above
 2. Show the GraphiQL interface with:
    - Query editor on left
    - Results panel on right
