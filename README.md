@@ -82,9 +82,20 @@ Then access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{
 ![Create Flip](screenshots/create-flip-mutation.png)
 *Creating a new flip with a bet amount*
 
+## 🎯 Wave 4 Features
+
+### New Capabilities
+- ✅ **Multi-Bet Support** - Multiple players can bet on the same flip
+- ✅ **Bet History** - Complete betting history per player
+- ✅ **Player Statistics** - Wins, losses, win rate, total wagered/won
+- ✅ **Enhanced Leaderboard** - Full stats with win rates
+- ✅ **Active Flips Query** - Filter for open/active games only
+
+**📖 See [WAVE4_FEATURES.md](WAVE4_FEATURES.md) for complete documentation**
+
 ### Example GraphQL Queries
 
-**Query all flips**:
+**Query all flips with bet details**:
 ```graphql
 {
   flips {
@@ -92,8 +103,65 @@ Then access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{
     creator
     betAmount
     status
+    totalBets
+    bets {
+      player
+      prediction
+      timestamp
+    }
     result
     winner
+  }
+}
+```
+
+**Get active flips only**:
+```graphql
+{
+  activeFlips {
+    id
+    status
+    totalBets
+  }
+}
+```
+
+**Get player statistics**:
+```graphql
+{
+  playerStats(player: "YOUR_ADDRESS") {
+    totalGames
+    wins
+    losses
+    winRate
+    totalWagered
+    totalWon
+  }
+}
+```
+
+**Get player history**:
+```graphql
+{
+  playerHistory(player: "YOUR_ADDRESS") {
+    id
+    status
+    result
+    winner
+  }
+}
+```
+
+**Enhanced leaderboard**:
+```graphql
+{
+  leaderboard {
+    player
+    wins
+    losses
+    totalGames
+    winRate
+    totalWon
   }
 }
 ```
@@ -108,7 +176,7 @@ mutation {
 **Place a bet**:
 ```graphql
 mutation {
-  placeBet(flipId: 0, prediction: HEADS)
+  placeBet(flipId: 0, prediction: Heads)
 }
 ```
 
@@ -140,7 +208,13 @@ mutation {
 - ✅ Cleaned repository structure (archived Wave 1-3 materials)
 - ✅ Enhanced judge experience with JUDGES_QUICK_START.md
 - ✅ Verified one-command Docker setup works flawlessly
-- 🚧 Adding new features (in progress)
+- ✅ **Multi-Bet Support** - Multiple players can bet on same flip
+- ✅ **Bet History Tracking** - Complete history per player
+- ✅ **Player Statistics** - Comprehensive stats (wins, losses, win rate, totals)
+- ✅ **Enhanced Leaderboard** - Full statistics with win rates
+- ✅ **Active Flips Query** - Filter for open/active games
+- ✅ **State Enhancements** - FlipStatus enum, Bet struct, PlayerStats
+- ✅ Build time: 4m 46s | Application ID: `2a7fbcefff7b8306025ba9609a0870adae4a741c303d5276bd303196aa558c81`
 
 ### Wave 3 Submission
 - ✅ Implemented core flip creation and betting logic
