@@ -16,11 +16,11 @@ Flip Market is a fully on-chain betting application where users can:
 
 - **GitHub Repository**: https://github.com/AlexD-Great/Linera-flip-market
 - **Frontend Demo**: https://linera-flip-market.vercel.app/
-- **Linera SDK Version**: testnet_conway branch (v0.15.6)
-- **Devnet Deployment**: ✅ Successfully deployed and tested
+- **Linera SDK Version**: v0.15.7
 - **Testnet Conway Deployment**: ✅ **LIVE ON TESTNET!**
-- **Testnet Application ID**: `1b5f7fcab424e855281b44b1b16a6c2fc608cd5a52e8cbb7d4383d021d754055`
-- **Testnet Chain ID**: `9a58e5e2d5cc82891cd0bfebcc311b309716d357d979a8cb9892b3bfb8f18fc0`
+- **Testnet Application ID**: `1e586836ff21783e1336de9838a754e598e33d421b7237a20e04208f9634e68a`
+- **Testnet Chain ID**: `0e191633f1913dde0599d319e1d010e6a6a66da38a69b8fdfd52a41841d89282`
+- **GraphQL Endpoint**: `http://localhost:8081`
 
 ## 🚀 Quick Start (Docker) - FOR JUDGES
 
@@ -33,6 +33,8 @@ git clone https://github.com/AlexD-Great/Linera-flip-market.git
 cd Linera-flip-market
 docker compose up
 ```
+
+**Expected Build Time: 20-25 minutes** (first build compiles all Rust dependencies and Linera SDK)
 
 That's it! The application will:
 1. ✅ Build the Linera contract automatically
@@ -68,7 +70,7 @@ Then access GraphiQL at: `http://localhost:8081/chains/{CHAIN_ID}/applications/{
 
 ### Docker Deployment Success
 ![Docker Deployment](screenshots/wave4-docker-build-success.png)
-*Successful deployment showing application ID and GraphQL endpoint (Build time: 4m 46s)*
+*Successful deployment showing application ID and GraphQL endpoint (Build time: 20m 27s)*
 
 ### GraphiQL Interface
 ![GraphiQL Interface](screenshots/graphiql-interface.png)

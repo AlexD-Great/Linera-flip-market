@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    ports:
+    - "8081:8081" # GraphQL service (testnet)
+    volumes:
+    - .:/build
+    environment:
+    - DEPLOYMENT_MODE=testnet
+    command: bash /build/run-testnet.bash

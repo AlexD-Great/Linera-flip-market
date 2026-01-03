@@ -80,10 +80,14 @@ export function LineraProvider({ children }: LineraProviderProps) {
   useEffect(() => {
     // Only initialize in browser environment
     if (typeof window !== 'undefined') {
-      initialize();
+      // Delay initialization slightly to let React render first
+      setTimeout(() => {
+        initialize();
+      }, 100);
     }
   }, []);
 
+  // Always render children immediately, don't wait for initialization
   return (
     <LineraContext.Provider
       value={{

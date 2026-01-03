@@ -19,7 +19,7 @@
 
 **Clear Message to Judges:**
 - ✅ One-command setup: `docker compose up`
-- ✅ Build time: ~5 minutes
+- ✅ Build time: 20-25 minutes (first build compiles all Rust dependencies)
 - ✅ No manual configuration needed
 - ✅ Uses official Linera buildathon template
 - ✅ Guaranteed to work
@@ -90,9 +90,9 @@
 ## 🧪 Verified Working
 
 ### Docker Build ✅
-- Compilation: 4m 46s
-- Application ID: `2a7fbcefff7b8306025ba9609a0870adae4a741c303d5276bd303196aa558c81`
-- Chain ID: `d5a223aba479082e5361030d6bb99a63899d2c3417f386e5f7c332a20f8688c7`
+- Compilation: 20m 27s (first build)
+- Application ID: `62a613e4edd6f6ef9156d0d5759b990bff52a25ca9c9c7893fdf7d76ad05322c`
+- Chain ID: `2079d8e1d7ac3a791e56e25578c57f325bea8f2c58844e8c15fd13ab89dbbbbb`
 - GraphQL: `http://localhost:8081`
 
 ### GraphQL Queries ✅
@@ -133,14 +133,14 @@
 ### What Judges Will See:
 
 1. **Clone repo** (30 seconds)
-2. **Run `docker compose up`** (5 minutes)
+2. **Run `docker compose up`** (20-25 minutes)
 3. **See successful deployment** with IDs
 4. **Open GraphiQL** in browser
 5. **Test queries** from JUDGES_QUICK_START.md
 6. **Verify features** work as documented
 7. **Grade project** ✅
 
-**Total time: ~10 minutes**
+**Total time: ~25-30 minutes**
 
 ### What Judges Will Appreciate:
 
@@ -169,10 +169,11 @@
 
 ### Build Metrics:
 - Lines of code: ~500+ new/modified
-- Build time: 4m 46s
+- Build time: 20m 27s (first build)
 - Features: 5 major additions
 - Queries: 5 new queries
-- Documentation: 4 comprehensive files
+- Documentation: 5 comprehensive files
+- Screenshots: 13 comprehensive images
 
 ---
 
@@ -204,11 +205,12 @@
 - [✅] Code pushed to GitHub
 - [✅] JUDGES_QUICK_START.md updated
 - [✅] Clear deployment instructions
-- [ ] Screenshots captured (next step)
-- [ ] README updated with screenshots
+- [✅] Screenshots captured (13 images)
+- [✅] README updated with screenshots
+- [✅] Build time accurately documented (20-25 minutes)
 
 ---
 
 **Wave 4 submission is production-ready!** 🚀
 
-**Next:** Capture screenshots following SCREENSHOTS_GUIDE.md, then final review.
+**Status:** All tasks complete. Ready for final submission.

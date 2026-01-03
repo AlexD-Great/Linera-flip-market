@@ -18,7 +18,12 @@ cd Linera-flip-market
 docker compose up
 ```
 
-**That's it!** No manual setup required. Build time: ~5 minutes.
+**That's it!** No manual setup required.
+
+**⏱️ Expected Build Time: 20-25 minutes**
+- First build compiles all Rust dependencies and Linera SDK from scratch
+- This is normal for Rust/WASM projects
+- Perfect time for a coffee break ☕
 
 > **Note:** This is the primary and recommended method for evaluating this project. All features are fully functional via Docker.
 

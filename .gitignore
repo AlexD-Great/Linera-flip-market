@@ -25,3 +25,10 @@ Thumbs.db
 # Build outputs
 *.wasm
 *.wat
+
+# AI helper documentation (not for commit)
+DEPLOYMENT_SUCCESS.md
+JUDGE_FEEDBACK_ACTION_PLAN.md
+TESTNET_CONNECTIVITY_ISSUE.md
+WAVE5_DEPLOYMENT_PLAN.md
+TESTNET_DEPLOYMENT_GUIDE.md

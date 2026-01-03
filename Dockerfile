@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     make
 
 RUN rustup target add wasm32-unknown-unknown
-RUN cargo install --locked linera-service@0.15.5 linera-storage-service@0.15.5
+RUN cargo install --locked linera-service@0.15.7 linera-storage-service@0.15.7
 
 RUN apt-get install -y curl
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | bash \
@@ -19,6 +19,10 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | b
 
 WORKDIR /build
 
+# Make scripts executable
+RUN chmod +x /build/run.bash /build/run-testnet.bash || true
+
 HEALTHCHECK CMD ["curl", "-s", "http://localhost:8081"]
 
-ENTRYPOINT bash /build/run.bash
+# Default to run.bash, but can be overridden by docker-compose command
+CMD ["bash", "/build/run.bash"]
