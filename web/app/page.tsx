@@ -5,7 +5,6 @@ import FlipCard from '@/components/FlipCard';
 import CreateFlip from '@/components/CreateFlip';
 import Leaderboard from '@/components/Leaderboard';
 import WalletConnect from '@/components/WalletConnect';
-import LineraStatus from '@/components/LineraStatus';
 import Footer from '@/components/Footer';
 import { useFlipMarketStore } from '@/lib/store';
 import { Loader2, Coins, PlusCircle, Trophy } from 'lucide-react';
@@ -33,10 +32,6 @@ export default function Home() {
             <WalletConnect />
           </div>
         </header>
-
-        <div className="max-w-4xl mx-auto mb-8">
-          <LineraStatus />
-        </div>
 
         <div className="flex justify-center gap-4 mb-8 flex-wrap">
           <button

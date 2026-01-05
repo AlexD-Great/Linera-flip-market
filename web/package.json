@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@linera/client": "^0.15.8",
     "clsx": "^2.1.1",
     "ethers": "^6.15.0",
     "lucide-react": "^0.548.0",
